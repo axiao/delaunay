@@ -18,8 +18,8 @@ class Triangulation
         Triangulation();
         ~Triangulation();
         // initialization method, takes in iterator range for inputs
-        template <typename Iter>
-        void init(Iter, Iter);
+        template <typename Iter, typename Comp>
+        void init(Iter, Iter, Comp);
         // adds positively oriented triangle uvw
         void add_triangle(const T&, const T&, const T&);
         // removes positively oriented triangle uvw
@@ -58,13 +58,16 @@ class Triangulation
                         }
                     }
                 }
-            private:
+            //private:
                 bool empty;
                 typename std::vector<T>* star;
         };
         // link rings around each vertex completely define all edges
         // and positional relationships in the triangulation
-        typename std::map<T, Linkring>* linkrings;
+        void add_to_star(const T&, const T&, const T&);
+        void rm_from_star(const T&, const T&, const T&);
+        typename std::map<T, Linkring*>* linkrings;
+        bool (*comparator)(const T&, const T&);
 };
 
 #endif
