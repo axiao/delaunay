@@ -1,5 +1,3 @@
-
-
 #include "triangulation.h"
 #include "geometric.h"
 #include <math.h>
@@ -18,10 +16,12 @@ Link<T>::Link() {
     next = 0;
 }
 template <typename T>
-Link<T>::Link(const T& value) {
+Link<T>::Link(const T& value, bool ghost=false, bool null=false) {
     val = value;
     prev = 0;
     next = 0;
+    is_ghost = ghost;
+    is_null = null;
 }
 template <typename T>
 Link<T>::~Link() { }
@@ -104,7 +104,6 @@ template <typename T>
 Triangulation<T>::Triangulation() {
     this->linkrings = new map<T, Linkring<T>*>();
 }
-
 template <typename T> 
 Triangulation<T>::~Triangulation() {
     typename map<T, Linkring<T>*>::iterator start, end, it; 
@@ -115,7 +114,6 @@ Triangulation<T>::~Triangulation() {
     }
     delete this->linkrings; // delete the map of linkrings
 }
-
 template <typename T> 
 template <typename Iter>
 void Triangulation<T>::init(Iter start, Iter end) {
@@ -126,8 +124,6 @@ void Triangulation<T>::init(Iter start, Iter end) {
         this->linkrings->insert(lrpair);
     }
 }
-
-
 template <typename T>
 void Triangulation<T>::add_triangle(const T& u, const T& v, const T& w) {
     // update u's linkring
@@ -137,7 +133,6 @@ void Triangulation<T>::add_triangle(const T& u, const T& v, const T& w) {
     // update w's linkring
     add_to_star(w, u, v);
 }
-
 template <typename T>
 void Triangulation<T>::rm_triangle(const T& u, const T& v, const T& w) {
     // update u's linkring
@@ -147,7 +142,6 @@ void Triangulation<T>::rm_triangle(const T& u, const T& v, const T& w) {
     // update w's linkring
     rm_from_star(w, u, v);
 }
-
 
 // private methods
 

@@ -16,10 +16,12 @@ class Link // an individual link in the cyclic data structure
 {
     public:
         Link();
-        Link(const T&);
+        Link(const T&, bool, bool);
         ~Link();
     //private:
         T val;
+        bool is_ghost;
+        bool is_null;
         Link<T>* prev;
         Link<T>* next;
 };
