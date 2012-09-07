@@ -55,7 +55,7 @@ class Triangulation
         ~Triangulation();
         // initialization method, takes in iterator range for inputs
         template <typename Iter>
-        void init(Iter, Iter);
+        void init(Iter, Iter, double (*)(const T&));
         // adds positively oriented triangle uvw
         void add_triangle(const T&, const T&, const T&);
         // removes positively oriented triangle uvw
@@ -69,6 +69,7 @@ class Triangulation
         void add_to_star(const T&, const T&, const T&);
         void rm_from_star(const T&, const T&, const T&);
         typename std::map<T, Linkring<T>*>* linkrings;
+        double (*orientation)(const T&);
 };
 
 

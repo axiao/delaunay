@@ -116,8 +116,9 @@ Triangulation<T>::~Triangulation() {
 }
 template <typename T> 
 template <typename Iter>
-void Triangulation<T>::init(Iter start, Iter end) {
+void Triangulation<T>::init(Iter start, Iter end, double (*ccw)(const T&)) {
     cout << "hi" << endl; 
+    orientation = ccw;
     pair<T, Linkring<T>*> lrpair;
     for (Iter it = start; it != end; ++it) {
         lrpair = pair<T, Linkring<T>*>(*it, new Linkring<T>()); 
@@ -186,11 +187,12 @@ void Triangulation<Point2>::rm_from_star(const Point2& sv, const Point2& v1, con
 */
 // testing only
 #include "geometric.h"
+double temp(const int& i) { return i;}
 int main() {
     Triangulation<int>* t = new Triangulation<int>();
     int a[] = {1, 2, 3, 4, 6};
     vector<int> v (a, a+5);
-    t->init(v.begin(), v.end());
+    t->init(v.begin(), v.end(), &temp);
     delete t;
 
     return 1;
