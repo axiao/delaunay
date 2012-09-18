@@ -11,17 +11,25 @@
 #include <map>
 
 
+// representing hole and ghost vertices
+template <typename T>
+struct VERTEX
+{
+    // returns true iff v is the representation of the ghost vertex
+    static bool is_ghost(const T& v);
+    // returns true iff v is the representation of the hole vertex
+    static bool is_hole(const T& v);
+};
+
 template <typename T>
 class Link // an individual link in the cyclic data structure
 {
     public:
         Link();
-        Link(const T&, bool, bool);
+        Link(const T&);
         ~Link();
-    //private:
+        // fields
         T val;
-        bool is_ghost;
-        bool is_null;
         Link<T>* prev;
         Link<T>* next;
 };
@@ -40,7 +48,7 @@ class Linkring
         void add_link(const T&, int);
         // delete the link at index
         void del_link(int);
-        
+        // fields
         bool empty;
         int size;
         Link<T>* star;
@@ -54,8 +62,9 @@ class Triangulation
         Triangulation();
         ~Triangulation();
         // initialization method, takes in iterator range for inputs
+        // and an evaluation function to compare points
         template <typename Iter>
-        void init(Iter, Iter, double (*)(const T&));
+        void init(Iter, Iter, double (*)(const T&, const T&));
         // adds positively oriented triangle uvw
         void add_triangle(const T&, const T&, const T&);
         // removes positively oriented triangle uvw
@@ -66,10 +75,13 @@ class Triangulation
     private:
         // link rings around each vertex completely define all edges
         // and positional relationships in the triangulation
-        void add_to_star(const T&, const T&, const T&);
-        void rm_from_star(const T&, const T&, const T&);
+        // add edge bc into link of a if legal
+        void add_to_star(const T& a, const T& b, const T& c);
+        // remove edge bc from link of a if possible
+        void rm_from_star(const T& a, const T& b, const T& c);
         typename std::map<T, Linkring<T>*>* linkrings;
-        double (*orientation)(const T&);
+        // gives an ordering of vertex v about the vertex center
+        double (*orientation)(const T& center, const T& v);
 };
 
 
