@@ -1,2 +1,3 @@
 delaunay
 ========
+A delaunay triangulator.
