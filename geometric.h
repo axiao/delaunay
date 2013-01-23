@@ -1,11 +1,11 @@
 /*
- * Geometric predicates and utility functions
+ * Geometric types, predicates and utility functions
  */
-
-#include <math.h>
 
 #ifndef GEOMETRIC_H_
 #define GEOMETRIC_H_
+
+#include <math.h>
 
 /*
  * simple 2d point class
@@ -76,7 +76,7 @@ class Triangle2
 /*
  * distance between 2 points in 2d
  */
-static double distance(const Point2& p1, const Point2& p2) 
+inline double distance(const Point2& p1, const Point2& p2) 
 {
     double a = (p1.x - p2.x);
     double b = (p1.y - p2.y);
@@ -86,7 +86,7 @@ static double distance(const Point2& p1, const Point2& p2)
 /*
  * abc are: ccw >0, colinear =0, cw <0
  */
-static double orient2d(const Point2& a, const Point2& b, const Point2& c)
+inline double orient2d(const Point2& a, const Point2& b, const Point2& c)
 {
     return (a.x - c.x) * (b.y - c.y) - (b.x - c.x) * (a.y - c.y);
 }
@@ -94,7 +94,7 @@ static double orient2d(const Point2& a, const Point2& b, const Point2& c)
 /*
  * d is, with circle abc: inside >0, cocircular =0, outside <0  
  */
-static double incircle(const Point2& a, const Point2& b, const Point2& c, 
+inline double incircle(const Point2& a, const Point2& b, const Point2& c, 
                        const Point2& d)
 {
     double amx = a.x - d.x;
