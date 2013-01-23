@@ -23,7 +23,7 @@ compile: ../delaunay
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 check:
-	echo 'make check has not been written yet'
+	$(MAKE) -C .. check
 
 clean:
 	$(RM) *~ *.o
