@@ -2,26 +2,16 @@
 
 DT = $(shell echo `pwd`/delaunay)
 
-CXXFLAGS = -c -g -Wall -std=c++0x
+.PHONY: default compile check clean
 
-# List of C++ sources
-SRCS = main.cpp triangulation.cpp linkring.cpp
+default: compile
 
-# List of C++ object files
-OBJS = $(SRCS:.cpp=.o)
-
-.PHONY: default delaunay .cpp.o check clean
-
-default: delaunay
-
-delaunay: $(OBJS)
-	$(CXX) $(OBJS) -o $@
-
-.cpp.o:
-	$(CXX) $(CXXFLAGS) $< -o $@
+compile:
+	$(MAKE) -C src compile
 
 check:
 	echo 'make check has not been written yet'
 
 clean:
-	$(RM) *~ *.o delaunay
+	$(RM) *~ delaunay
+	$(MAKE) -C src clean
