@@ -10,7 +10,7 @@ compile:
 	$(MAKE) -C src compile
 
 check:
-	echo 'make check has not been written yet'
+	$(info TODO: make check has not been written yet)
 
 clean:
 	$(RM) *~ delaunay
