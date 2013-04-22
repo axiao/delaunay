@@ -5,8 +5,6 @@
 #include <iostream>
 #include <math.h>
 
-
-
 #include "geometric.h"
 #include "vertex.h"
 #include "linkring.h"
@@ -37,6 +35,7 @@ int main() {
     vector<vertex> v (a, a+5);
 
     t->init(v.begin(), v.end(), v_to_p);
+
     delete t;
 
 

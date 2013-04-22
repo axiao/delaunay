@@ -1,4 +1,4 @@
-/*
+/**
  * Geometric types, predicates and utility functions
  */
 

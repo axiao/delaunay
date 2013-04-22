@@ -1,4 +1,4 @@
-/*
+/**
  * Linkrings are the main data structure for representing our triangulation.
  * each linkring literally contains the star of outgoing edges from a central
  * vertex.

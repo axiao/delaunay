@@ -5,7 +5,7 @@ DT = $(shell echo `pwd`/../delaunay)
 CXXFLAGS = -c -g -Wall -std=c++0x
 
 # List of C++ sources
-SRCS = main.cpp triangulation.cpp linkring.cpp
+SRCS = main.cpp triangulation.cpp linkring.cpp quadedge.cpp
 
 # List of C++ object files
 OBJS = $(SRCS:.cpp=.o)

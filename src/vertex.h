@@ -1,4 +1,4 @@
-/*
+/**
  * Vertices are represented as integers.
  *
  * General vertices (which correspond to real planar coordinates) have

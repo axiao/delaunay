@@ -18,7 +18,7 @@ Triangulation::~Triangulation() {
 }
 
 void Triangulation::init(Iter start, Iter end, V_BUFFER vbf) {
-    std::cout << "initing ... ";
+    std::cout << "initiating triangulation ... ";
     v_buf = vbf;
     std::pair<vertex, Linkring*> lrpair;
     for (Iter it = start; it != end; ++it) {

@@ -1,4 +1,4 @@
-/*
+/**
  * Main triangulation class.
  * Follows the pattern described by Blelloch et al. using link rings to
  * represent relationships between triangulation vertices.
