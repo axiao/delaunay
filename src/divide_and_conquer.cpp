@@ -24,16 +24,12 @@ edge edge_pair::operator[](size_t i) {
 }
 
 
-edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
+edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
     // assumes that v is sorted in lexicographic order
     edge_pair ldo_ldi, rdo_rdi;
     edge a, b, c, ldo, ldi, rdo, rdi, basel, lcand, rcand, temp;
     vertex *v_l, *v_r;
     size_t v_l_n, v_r_n;
-
-    if (p == NULL) {
-        std::cerr << "the vertex_buffer is null!" << std::endl;
-    }
 
     if (n == 2) { 
         // for two vertices, return the two directed edges between them
@@ -49,10 +45,10 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
         a.set_dst(v[1]);
         b.set_org(v[1]);
         b.set_dst(v[2]);
-        if (p->orient2d(v[0], v[1], v[2]) > 0) {
+        if (p.orient2d(v[0], v[1], v[2]) > 0) {
             c = connect(b, a);
             return edge_pair(a, b.sym());
-        } else if (p->orient2d(v[0], v[2], v[1])) {
+        } else if (p.orient2d(v[0], v[2], v[1])) {
             c = connect(b, a);
             return edge_pair(c.sym(), c);
         } else { // the points are collinear
@@ -75,9 +71,9 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
 
         // loop to compute lower comment tangent of l and r
         while (true) {
-            if (p->leftof(rdi.org(), ldi.org(), ldi.dst())) {
+            if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
                 ldi = ldi.lnext();
-            } else if (p->leftof(ldi.org(), rdi.org(), rdi.dst())) {
+            } else if (p.leftof(ldi.org(), rdi.org(), rdi.dst())) {
                 rdi = rdi.rprev();
             } else {
                 break;
@@ -96,16 +92,16 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
         // merge loop
         while (true) {
             lcand = basel.sym().onext();
-            if (p->rightof(lcand.dst(), basel.org(), basel.dst())) {
-                while (p->incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst())) {
+            if (p.rightof(lcand.dst(), basel.org(), basel.dst())) {
+                while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst())) {
                     temp = lcand.onext();
                     delete_edge(lcand);
                     lcand = temp;
                 }
             }
             rcand = basel.oprev();
-            if (p->rightof(rcand.dst(), basel.org(), basel.dst())) {
-                while (p->incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst())) {
+            if (p.rightof(rcand.dst(), basel.org(), basel.dst())) {
+                while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst())) {
                     temp = rcand.oprev();
                     delete_edge(rcand);
                     rcand = temp;
@@ -114,16 +110,16 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
             // if both lcand and rcand are invalid, 
             // then basel is the upper common tangent
             // ... break out of merge loop
-            if ((not p->rightof(lcand.dst(), basel.org(), basel.dst())) and 
-                (not p->rightof(rcand.dst(), basel.org(), basel.dst()))) {
+            if ((not p.rightof(lcand.dst(), basel.org(), basel.dst())) and 
+                (not p.rightof(rcand.dst(), basel.org(), basel.dst()))) {
                 break;
             }
             // the next cross edge is to be connected to either 
             // lcand.dst() or rcand.dst() 
             // if both valid, choose the appropriate one using incircle test
-            if ((not p->rightof(lcand.dst(), basel.org(), basel.dst())) or
-                ((p->rightof(rcand.dst(), basel.org(), basel.dst()) and 
-                    p->incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())))) {
+            if ((not p.rightof(lcand.dst(), basel.org(), basel.dst())) or
+                ((p.rightof(rcand.dst(), basel.org(), basel.dst()) and 
+                    p.incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())))) {
                 // add cross edge basel from rcand.dst() to basel.dst()
                 basel = connect(rcand, basel.sym());
             } else {
@@ -136,31 +132,28 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer* p) {
     }
 }
 
-edge_pair delaunay_dc2(vertex v[], size_t n, vertex_buffer* p) {
+edge_pair delaunay_dc2(vertex v[], size_t n, vertex_buffer p) {
     return edge_pair(); // TODO
 }
 
 // lexicographic quicksort
-void lexico_sort(vertex v[], size_t n, vertex_buffer* p) {
-    if (p == NULL) {
-        std::cerr << "the vertex_buffer is null!" << std::endl;
-    }
+void lexico_sort(vertex v[], size_t n, vertex_buffer p) {
     quicksort(v, 0, n-1, p);
 }
 
 // helper method for in-place quicksort
-size_t partition(vertex arr[], size_t left, size_t right, size_t piv, vertex_buffer* p) {
+size_t partition(vertex arr[], size_t left, size_t right, size_t piv, vertex_buffer p) {
     geometric::Point2 pivot_value;
     vertex temp;
     size_t stored, i;
-    pivot_value = p->val(arr[piv]);
+    pivot_value = p.val(arr[piv]);
     // swap arr[piv] and arr[right]
     temp = arr[piv];
     arr[piv] = arr[right];
     arr[right] = temp;
     stored = left;
     for (i = left; i < right; ++i) {
-        if (p->val(arr[i]) <= pivot_value) {
+        if (p.val(arr[i]) <= pivot_value) {
             temp = arr[i];
             arr[i] = arr[stored];
             arr[stored] = temp;
@@ -173,7 +166,7 @@ size_t partition(vertex arr[], size_t left, size_t right, size_t piv, vertex_buf
     return stored;
 }
 
-void quicksort(vertex arr[], size_t left, size_t right, vertex_buffer* p) {
+void quicksort(vertex arr[], size_t left, size_t right, vertex_buffer p) {
     size_t pivot_index;
     if (left < right) {
         pivot_index = left + (std::rand() % (right - left + 1));
@@ -184,6 +177,6 @@ void quicksort(vertex arr[], size_t left, size_t right, vertex_buffer* p) {
 }
 
 // basically quickselect
-int lexico_partition(vertex v[], size_t n, bool by_x, vertex_buffer* p) {
- return 0;    
+int lexico_partition(vertex v[], size_t n, bool by_x, vertex_buffer p) {
+ return 0; 
 }

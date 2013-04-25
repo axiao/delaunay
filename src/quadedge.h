@@ -6,6 +6,8 @@
 #ifndef QUADEDGE_H_
 #define QUADEDGE_H_
 
+#include <string>
+
 #include "vertex.h"
 
 class Quadedge;
@@ -74,5 +76,8 @@ edge connect(edge, edge);
 void delete_edge(edge);
 void swap(edge);
 edge make_edge(vertex, vertex);
+
+// printing the triangles
+std::string serialize_triangles(edge); //?
 
 #endif

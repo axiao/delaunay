@@ -6,6 +6,7 @@
 #define GEOMETRIC_H_
 
 #include <math.h>
+#include <iostream>
 
 namespace geometric {
 
@@ -60,9 +61,15 @@ class Point2
             }
             return x >= p.x;
         }
+
+
         double x; // cartesian x coordinate
         double y; // cartesian y coordinate
 };
+
+inline std::ostream& operator<<(std::ostream& strm, const Point2& a) {
+    return strm << "(" << a.x << "," << a.y << ")";
+}
 
 /*
  * oriented edge in 2d, org->dst

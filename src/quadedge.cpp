@@ -1,3 +1,6 @@
+#include <iostream>
+#include <stack>
+
 #include "quadedge.h"
 
 // Edge_Record
@@ -67,7 +70,7 @@ void Edge_Record::set_dst(vertex p) {
 
 // Q_Record
 Q_Record::Q_Record() {
-
+    data = NULL;
 }
 
 Q_Record Q_Record::next() {
@@ -178,4 +181,65 @@ edge make_edge(vertex org, vertex dst) {
     er.get_qr().v = org;
     er.sym().get_qr().v = dst;
     return er;
+}
+
+// given a counterclockwise convex hull edge, returns a string of triangles
+// <v1> <v2> <v3>
+// oriented counter clockwise, separated by newlines
+std::string serialize_triangles(edge hull_edge) {
+    // algorithm idea: tag the directed ccw edges of each face as we list them
+    // use the oleft (aka rot_inv()) of each ccw edge and its next to find faces
+    // do another round to untag all
+    // ... or be a tool and use a hashtable to record visited faces + dfs
+
+    // mark all hull edges as visited (we don't return the open face)
+    edge e, e1, e2;
+    int i = 0;
+
+    e = hull_edge.sym();
+    while (not (e.get_qr().data)) {
+        //e.get_qr().data = (void*) true; // visited
+        e = e.lnext();
+        std::cout << e.org() << " ";
+        if (++i > 30) { std::cout << std::endl; break; }
+    }
+
+    // perform dfs and mark all visited faces
+    std::string output = "";
+    std::stack<edge> fringe = std::stack<edge>();
+    fringe.push(hull_edge);
+
+    // invariants:
+    // if e is popped, e's sym() was already visited
+    // if e is not visited, neither have any of the other edges of the face
+    //while (not fringe.empty()) {
+    while (false) {
+        e = fringe.top();
+        std::cout << e.org() << ":(" << (int) e.get_qr().data << ") ";
+        fringe.pop();
+        if (not (e.get_qr().data)) {
+            // visit the triangle left of e, mark e and all adjoining edges
+            // add the sym() of each visited edge except e
+            std::string triangle = "";
+            e1 = e.lnext();
+            std::cout << e1.org() << " ";
+            e2 = e1.lnext();
+            std::cout << e2.org() << " ";
+            // assert e == e2.lnext()
+            triangle += e.org() + " ";
+            e.get_qr().data = (void*) true;
+            triangle += e1.org() + " ";
+            e1.get_qr().data = (void*) true;
+            fringe.push(e1.sym());
+            triangle += e2.org();
+            e2.get_qr().data = (void*) true;
+            fringe.push(e2.sym());
+            output += triangle + "\n";
+        }
+        std::cout << std::endl;
+    }
+
+    // TODO undo all the data setting you did you miserable piece of trash
+
+    return output;
 }

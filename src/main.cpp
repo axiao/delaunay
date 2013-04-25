@@ -1,8 +1,9 @@
 // currently, testing
 
 #include <vector>
-#include <functional>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <math.h>
 
 #include "geometric.h"
@@ -16,38 +17,68 @@ using namespace geometric;
 
 int main() {
 
-    // testing vertices
-    int hole = -1;
-    int ghost = 0;
-    cout << "-1 is ghost? " << is_ghost(hole) << endl;
-    cout << "-1 is hole? " << is_hole(hole) << endl;
-    cout << "0 is ghost? " << is_ghost(ghost) << endl;
-    cout << "0 is hole? " << is_hole(ghost) << endl;
+    size_t num_v, dim, num_attr, num_bd_m, vn;
+    double vx, vy;
 
-    Point2 points[] = {Point2(0,0), Point2(1,1), Point2(2,2), Point2(3,3), Point2(4,4), Point2(5,5), Point2(6,6), Point2(7,7)};
-    vector<Point2>* ps = new vector<Point2>(points, points + sizeof(points)/sizeof(points[0]));
-    vertex_buffer* p = new vertex_buffer(ps);
-    vertex v[] = {7, 6, 5, 4, 3, 2, 1};
-    lexico_sort(v, 7, p);
-    for (int i = 0; i < 7; ++i) {
-        cout << v[i] << endl;
+    // TODO make an array as well
+
+    // read vertices in from input
+    string line;
+    ifstream nodefile;
+
+    nodefile.open("test.node");
+    if (nodefile.is_open()) {
+        while(getline(nodefile >> ws, line)) {
+            if (line != "" and line[0] != '#') {
+                istringstream iss(line);
+                // parse the first line
+                iss >> num_v; 
+                iss >> dim;
+                iss >> num_attr;
+                iss >> num_bd_m;
+                if (dim != 2) {
+                    cout << "dimension must be 2" << endl;
+                    return 1;
+                }
+                // TODO more stuff for boundary markers, attributes
+                break;
+                
+            }
+        }
+        Point2 points[num_v+1];
+        while(getline(nodefile >> ws, line)) {
+            if (line != "" and line[0] != '#') {
+                istringstream iss(line);
+                // parse other .node lines
+                // <vertex no.> <x> <y> [attrs] [bdy marker]
+                iss >> vn;
+                iss >> vx;
+                iss >> vy;
+                // TODO assert vn was not already used?
+                points[vn] = Point2(vx, vy);
+            }
+        }
+
+        // make the vertex[] and vector<Point2>
+        vertex vertices[num_v];
+        for (size_t i = 0; i < num_v; ++i) {
+            vertices[i] = i + 1;
+        }
+        vector<Point2>* vec_p = new vector<Point2>(points+1, points+num_v+1);
+        vertex_buffer p(vec_p);
+
+        edge_pair le_re;
+        le_re = delaunay_dc(vertices, num_v, p);
+        cout << serialize_triangles(le_re[0]) << endl;
+        // TODO triangulate 
+
+
+    } else {
+        cout << "unable to open file" << endl;
+        return 1;
     }
 
-/*
-    // testing triangulations
-    Triangulation* t = new Triangulation();
-
-    // NOTE: the first vertex is necessarily the ghost vertex
-    Point2 points[] = {Point2(0,0), Point2(1,1), Point2(2,2), Point2(3,3), Point2(4,4), Point2(5,5), Point2(6,6), Point2(7,7)};
-    V_BUFFER v_to_p = V_BUFFER(points);
-
-    vertex a[] = {1, 2, 3, 4, 6};
-    vector<vertex> v (a, a+5);
-
-    t->init(v.begin(), v.end(), v_to_p);
-
-    delete t;
-*/
+    //delaunay_dc(
 
     return 0;
 
