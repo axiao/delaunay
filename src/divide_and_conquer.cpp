@@ -66,8 +66,19 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         ldo = ldo_ldi[0];
         ldi = ldo_ldi[1];
         rdo_rdi = delaunay_dc(v_r, v_r_n, p); // returns a size 2 array
-        rdo = ldo_ldi[0];
-        rdi = ldo_ldi[1];
+        rdo = rdo_rdi[0];
+        rdi = rdo_rdi[1];
+
+        std::cout << "left (ldo(" << 
+            ldo.org() << "," << ldo.dst() << "),ldi(" <<
+            ldi.org() << "," << ldi.dst() << "))" << std::endl;
+        std::cout << serialize_triangles(ldo);
+        std::cout << serialize_triangles(ldi);
+        std::cout << "right(rdo(" << 
+            rdo.org() << "," << rdo.dst() << "),rdi(" <<
+            rdi.org() << "," << rdi.dst() << "))" << std::endl;
+        std::cout << serialize_triangles(rdo);
+        std::cout << serialize_triangles(rdi);
 
         // loop to compute lower comment tangent of l and r
         while (true) {
@@ -82,6 +93,7 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
 
         // create the first cross edge basel from rdi.org to ldi.org
         basel = connect(rdi.sym(), ldi);
+        std::cout << "basel: (" << basel.org() << "," << basel.dst() << ")" << std::endl;
         if (ldi.org() == ldo.org()) {
             ldo = basel.sym();
         }
@@ -92,6 +104,7 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         // merge loop
         while (true) {
             lcand = basel.sym().onext();
+            std::cout << "lcand: (" << lcand.org() << "," << lcand.dst() << ")" << std::endl;
             if (p.rightof(lcand.dst(), basel.org(), basel.dst())) {
                 while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst())) {
                     temp = lcand.onext();

@@ -67,10 +67,28 @@ int main() {
         vector<Point2>* vec_p = new vector<Point2>(points+1, points+num_v+1);
         vertex_buffer p(vec_p);
 
+        // FIXME
         edge_pair le_re;
+        lexico_sort(vertices, num_v, p);
+        cout << "sorted verts: ";
+        for (size_t i = 0; i < num_v; ++i) {
+            cout << vertices[i] << " ";
+        }
+        cout << endl;
         le_re = delaunay_dc(vertices, num_v, p);
-        cout << serialize_triangles(le_re[0]) << endl;
-        // TODO triangulate 
+
+        cout << "num_v: " << num_v << endl;
+        cout << "vertices: ";
+        for (size_t i = 0; i < num_v; ++i) {
+            cout << vertices[i] << " ";
+        }
+        cout << endl;
+        cout << "left edge: (" << le_re[0].org() << "," << le_re[0].dst() << ")" << endl;
+        cout << "right edge: (" << le_re[1].org() << "," << le_re[1].dst() << ")" << endl;
+        cout << "... they are the same?! something is totally broken." << endl;
+
+
+        //cout << serialize_triangles(le_re[1]) << endl;
 
 
     } else {

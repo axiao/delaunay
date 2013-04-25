@@ -148,6 +148,7 @@ void splice(Edge_Record a_er, Edge_Record b_er) {
 
 // connects the a.dst to b.org through a new edge
 edge connect(edge a, edge b) {
+    std::cout << "connected edge: (" << a.dst() << "," << b.org() << ")" << std::endl;
     Edge_Record er = make_edge();
     er.get_qr().v = a.sym().get_qr().v;
     er.sym().get_qr().v = b.get_qr().v;
@@ -177,6 +178,7 @@ void swap(edge er) {
 }
 
 edge make_edge(vertex org, vertex dst) {
+    std::cout << "added edge: (" << org << "," << dst << ")" << std::endl;
     Edge_Record er = make_edge();
     er.get_qr().v = org;
     er.sym().get_qr().v = dst;
@@ -194,14 +196,12 @@ std::string serialize_triangles(edge hull_edge) {
 
     // mark all hull edges as visited (we don't return the open face)
     edge e, e1, e2;
-    int i = 0;
 
+    std::cout << "visiting ... " << std::flush;
     e = hull_edge.sym();
     while (not (e.get_qr().data)) {
-        //e.get_qr().data = (void*) true; // visited
+        e.get_qr().data = (void*) true; // visited
         e = e.lnext();
-        std::cout << e.org() << " ";
-        if (++i > 30) { std::cout << std::endl; break; }
     }
 
     // perform dfs and mark all visited faces
@@ -212,10 +212,8 @@ std::string serialize_triangles(edge hull_edge) {
     // invariants:
     // if e is popped, e's sym() was already visited
     // if e is not visited, neither have any of the other edges of the face
-    //while (not fringe.empty()) {
-    while (false) {
+    while (not fringe.empty()) {
         e = fringe.top();
-        std::cout << e.org() << ":(" << (int) e.get_qr().data << ") ";
         fringe.pop();
         if (not (e.get_qr().data)) {
             // visit the triangle left of e, mark e and all adjoining edges
@@ -236,10 +234,39 @@ std::string serialize_triangles(edge hull_edge) {
             fringe.push(e2.sym());
             output += triangle + "\n";
         }
-        std::cout << std::endl;
     }
 
-    // TODO undo all the data setting you did you miserable piece of trash
+    std::cout << "unvisiting ..." << std::flush;
+    // unvisit the hull
+    e = hull_edge.sym();
+    while (e.get_qr().data) {
+        e.get_qr().data = (void*) false; // unvisit
+        e = e.lnext();
+    }
+
+    // perform dfs and unmark all visited faces
+    fringe.push(hull_edge);
+
+    // invariants:
+    // if e is popped, e's sym() was already unvisited
+    // if e is not visited, neither have any of the other edges of the face
+    while (not fringe.empty()) {
+        e = fringe.top();
+        fringe.pop();
+        if ((e.get_qr().data)) {
+            // unvisit the triangle left of e, unmark e and all adjoining edges
+            // add the sym() of each unvisited edge except e
+            e1 = e.lnext();
+            e2 = e1.lnext();
+            // assert e == e2.lnext()
+            e.get_qr().data = (void*) false;
+            e1.get_qr().data = (void*) false;
+            fringe.push(e1.sym());
+            e2.get_qr().data = (void*) false;
+            fringe.push(e2.sym());
+        }
+    }
+    std::cout << std::endl;
 
     return output;
 }
