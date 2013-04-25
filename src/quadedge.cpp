@@ -11,51 +11,51 @@ Edge_Record::Edge_Record() {
 Edge_Record::Edge_Record(Quadedge* qe, int rot): 
     q(qe), r(rot) { };
 
-Q_Record& Edge_Record::get_qr() {
+Q_Record& Edge_Record::get_qr() const {
     return q->e[r % 4];
 }
 
-Edge_Record Edge_Record::rot() {
+Edge_Record Edge_Record::rot() const {
     return q->rot(r);
 }
 
-Edge_Record Edge_Record::sym() {
+Edge_Record Edge_Record::sym() const {
     return q->sym(r);
 }
 
-Edge_Record Edge_Record::rot_inv() {
+Edge_Record Edge_Record::rot_inv() const {
     return q->rot_inv(r);
 }
 
-Edge_Record Edge_Record::onext() {
+Edge_Record Edge_Record::onext() const {
     return q->onext(r);
 }
 
-Edge_Record Edge_Record::oprev() {
+Edge_Record Edge_Record::oprev() const {
     return rot().onext().rot();
 }
 
-Edge_Record Edge_Record::lnext() {
+Edge_Record Edge_Record::lnext() const {
     return rot_inv().onext().rot();
 }
 
-Edge_Record Edge_Record::lprev() {
+Edge_Record Edge_Record::lprev() const {
     return onext().sym();
 }
 
-Edge_Record Edge_Record::rnext() {
+Edge_Record Edge_Record::rnext() const {
     return sym().onext();
 }
 
-Edge_Record Edge_Record::rprev() {
+Edge_Record Edge_Record::rprev() const {
     return rot().onext().rot_inv();
 }
 
-vertex Edge_Record::org() {
+vertex Edge_Record::org() const {
     return get_qr().v;
 }
 
-vertex Edge_Record::dst() {
+vertex Edge_Record::dst() const {
     return sym().get_qr().v;
 }
 
@@ -65,6 +65,10 @@ void Edge_Record::set_org(vertex p) {
 
 void Edge_Record::set_dst(vertex p) {
     sym().get_qr().v = p;
+}
+
+std::ostream& operator<<(std::ostream& strm, const Edge_Record& a) {
+    return strm << "[" << a.org() << "," << a.dst() << "]";
 }
 
 
@@ -148,10 +152,12 @@ void splice(Edge_Record a_er, Edge_Record b_er) {
 
 // connects the a.dst to b.org through a new edge
 edge connect(edge a, edge b) {
-    std::cout << "connected edge: (" << a.dst() << "," << b.org() << ")" << std::endl;
+    std::cout << "connecting: "<<"("<<a.org()<<","<<a.dst()<<") and ("<<
+        b.org()<<","<<b.dst()<<") for new edge ("<<a.dst()<<","<<b.org()<<")"<<
+        std::endl;
     Edge_Record er = make_edge();
-    er.get_qr().v = a.sym().get_qr().v;
-    er.sym().get_qr().v = b.get_qr().v;
+    er.get_qr().v = a.dst();
+    er.sym().get_qr().v = b.org();
     splice(er, a.lnext());
     splice(er.sym(), b);
     return er;

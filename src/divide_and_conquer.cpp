@@ -80,16 +80,30 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         std::cout << serialize_triangles(rdo);
         std::cout << serialize_triangles(rdi);
 
-        // loop to compute lower comment tangent of l and r
+        // loop to compute lower common tangent of l and r
         while (true) {
             if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
+                std::cout << "swapped ldi" << std::endl;
                 ldi = ldi.lnext();
-            } else if (p.leftof(ldi.org(), rdi.org(), rdi.dst())) {
+            } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
+                std::cout << "swapped rdi" << std::endl;
                 rdi = rdi.rprev();
             } else {
                 break;
             }
         }
+
+        std::cout << "computing lower common tangent" << std::endl;
+        std::cout << "left (ldo(" << 
+            ldo.org() << "," << ldo.dst() << "),ldi(" <<
+            ldi.org() << "," << ldi.dst() << "))" << std::endl;
+        std::cout << serialize_triangles(ldo);
+        std::cout << serialize_triangles(ldi);
+        std::cout << "right(rdo(" << 
+            rdo.org() << "," << rdo.dst() << "),rdi(" <<
+            rdi.org() << "," << rdi.dst() << "))" << std::endl;
+        std::cout << serialize_triangles(rdo);
+        std::cout << serialize_triangles(rdi);
 
         // create the first cross edge basel from rdi.org to ldi.org
         basel = connect(rdi.sym(), ldi);
@@ -100,12 +114,17 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         if (rdi.org() == rdo.org()) {
             rdo = basel;
         }
+        std::cout << "basel's stuff: " << basel.onext() << " " <<
+            basel.oprev() << " " << basel.sym().onext() << " " <<
+            basel.sym().oprev() << std::endl;;
 
         // merge loop
         while (true) {
             lcand = basel.sym().onext();
             std::cout << "lcand: (" << lcand.org() << "," << lcand.dst() << ")" << std::endl;
             if (p.rightof(lcand.dst(), basel.org(), basel.dst())) {
+                std::cout << "lcand valid: (" << lcand.org() << "," << 
+                    lcand.dst() << ")" << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst())) {
                     temp = lcand.onext();
                     delete_edge(lcand);
@@ -113,7 +132,10 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
                 }
             }
             rcand = basel.oprev();
+            std::cout << "rcand: (" << rcand.org() << "," << rcand.dst() << ")" << std::endl;
             if (p.rightof(rcand.dst(), basel.org(), basel.dst())) {
+                std::cout << "rcand valid: (" << rcand.org() << "," << 
+                    rcand.dst() << ")" << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst())) {
                     temp = rcand.oprev();
                     delete_edge(rcand);

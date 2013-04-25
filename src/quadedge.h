@@ -6,6 +6,7 @@
 #ifndef QUADEDGE_H_
 #define QUADEDGE_H_
 
+#include <iostream>
 #include <string>
 
 #include "vertex.h"
@@ -19,21 +20,21 @@ typedef struct Edge_Record
 {
     Edge_Record();
     Edge_Record(Quadedge*, int);
-    Q_Record& get_qr();
+    Q_Record& get_qr() const;
 
-    Edge_Record rot();
-    Edge_Record sym();
-    Edge_Record rot_inv();
-    Edge_Record onext();
+    Edge_Record rot() const;
+    Edge_Record sym() const;
+    Edge_Record rot_inv() const;
+    Edge_Record onext() const;
 
-    Edge_Record oprev();
-    Edge_Record lnext();
-    Edge_Record lprev();
-    Edge_Record rnext();
-    Edge_Record rprev();
+    Edge_Record oprev() const;
+    Edge_Record lnext() const;
+    Edge_Record lprev() const;
+    Edge_Record rnext() const;
+    Edge_Record rprev() const;
 
-    vertex org();
-    vertex dst();
+    vertex org() const;
+    vertex dst() const;
 
     void set_org(vertex);
     void set_dst(vertex);
@@ -41,6 +42,8 @@ typedef struct Edge_Record
     Quadedge* q;
     int r;
 } edge;
+
+std::ostream& operator<<(std::ostream&, const Edge_Record&);
 
 struct Q_Record 
 {
