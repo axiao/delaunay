@@ -7,6 +7,8 @@
 
 #include <math.h>
 
+namespace geometric {
+
 /*
  * simple 2d point class
  */
@@ -32,6 +34,31 @@ class Point2
         }
         bool operator!=(const Point2& p) { 
             return (x != p.x) || (y != p.y);
+        }
+        // lexicographic comparison
+        bool operator<(const Point2& p) {
+            if (x == p.x) {
+                return y < p.y;
+            }
+            return x < p.x;
+        }
+        bool operator>(const Point2& p) {
+            if (x == p.x) {
+                return y > p.y;
+            }
+            return x > p.x;
+        }
+        bool operator<=(const Point2& p) {
+            if (x == p.x) {
+                return y <= p.y;
+            }
+            return x <= p.x;
+        }
+        bool operator>=(const Point2& p) {
+            if (x == p.x) {
+                return y >= p.y;
+            }
+            return x >= p.x;
         }
         double x; // cartesian x coordinate
         double y; // cartesian y coordinate
@@ -108,6 +135,18 @@ inline double incircle(const Point2& a, const Point2& b, const Point2& c,
     double cm2 = cmx * cmx + cmy * cmy;
     return amx*bmy*cm2 + cmx*amy*bm2 + bmx*cmy*am2 - 
            bmx*amy*cm2 - amx*cmy*bm2 - cmx*bmy*am2;
+}
+
+// is point X left of the directed edge (org, dst)?
+inline bool leftof(const Point2& X, const Point2& org, const Point2& dst) {
+    return orient2d(X, org, dst) > 0;
+}
+
+// is point X right of the directed edge (org, dst)?
+inline bool rightof(const Point2& X, const Point2& org, const Point2& dst) {
+    return orient2d(X, dst, org) > 0;
+}
+
 }
 
 #endif

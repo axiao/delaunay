@@ -18,12 +18,23 @@ typedef struct Edge_Record
     Edge_Record();
     Edge_Record(Quadedge*, int);
     Q_Record& get_qr();
+
     Edge_Record rot();
     Edge_Record sym();
     Edge_Record rot_inv();
     Edge_Record onext();
+
+    Edge_Record oprev();
+    Edge_Record lnext();
+    Edge_Record lprev();
+    Edge_Record rnext();
+    Edge_Record rprev();
+
     vertex org();
     vertex dst();
+
+    void set_org(vertex);
+    void set_dst(vertex);
 
     Quadedge* q;
     int r;
@@ -62,5 +73,6 @@ void splice(Edge_Record, Edge_Record);
 edge connect(edge, edge);
 void delete_edge(edge);
 void swap(edge);
+edge make_edge(vertex, vertex);
 
 #endif

@@ -28,12 +28,40 @@ Edge_Record Edge_Record::onext() {
     return q->onext(r);
 }
 
+Edge_Record Edge_Record::oprev() {
+    return rot().onext().rot();
+}
+
+Edge_Record Edge_Record::lnext() {
+    return rot_inv().onext().rot();
+}
+
+Edge_Record Edge_Record::lprev() {
+    return onext().sym();
+}
+
+Edge_Record Edge_Record::rnext() {
+    return sym().onext();
+}
+
+Edge_Record Edge_Record::rprev() {
+    return rot().onext().rot_inv();
+}
+
 vertex Edge_Record::org() {
     return get_qr().v;
 }
 
 vertex Edge_Record::dst() {
     return sym().get_qr().v;
+}
+
+void Edge_Record::set_org(vertex p) {
+    get_qr().v = p;
+}
+
+void Edge_Record::set_dst(vertex p) {
+    sym().get_qr().v = p;
 }
 
 
@@ -105,9 +133,9 @@ void splice(Edge_Record a_er, Edge_Record b_er) {
 
     // handle the left rings (dual)
     a_ler = a_er.rot_inv();
-    a_lp = a_ner.onext().get_qr();
+    a_lp = a_er.lprev().get_qr();
     b_ler = b_er.rot_inv();
-    b_lp = b_ner.onext().get_qr();
+    b_lp = b_er.lprev().get_qr();
 
     a_lp.set_next(b_ler);
     b_lp.set_next(a_ler);
@@ -120,14 +148,14 @@ edge connect(edge a, edge b) {
     Edge_Record er = make_edge();
     er.get_qr().v = a.sym().get_qr().v;
     er.sym().get_qr().v = b.get_qr().v;
-    splice(er, a.rot_inv().onext());
+    splice(er, a.lnext());
     splice(er.sym(), b);
     return er;
 }
 
 // removes an edge er, deletes its corresponding quadedge.
 void delete_edge(edge er) {
-    splice(er, er.rot().onext());
+    splice(er, er.oprev());
     splice(er.sym(), er.rot_inv().onext());
     delete er.q;
 }
@@ -135,12 +163,19 @@ void delete_edge(edge er) {
 // swaps an edge (a.org, b.org) with (a.dst, b.dst)
 void swap(edge er) {
     Edge_Record a, b;
-    a = er.rot().onext();
-    b = er.rot_inv().onext();
+    a = er.oprev();
+    b = er.sym().oprev();
     splice(er, a);
     splice(er.sym(), b);
-    splice(er, a.rot_inv().onext());
-    splice(er.sym(), b.rot_inv().onext());
+    splice(er, a.lnext());
+    splice(er.sym(), b.lnext());
     er.get_qr().v = a.sym().get_qr().v;
     er.sym().get_qr().v = b.sym().get_qr().v;
+}
+
+edge make_edge(vertex org, vertex dst) {
+    Edge_Record er = make_edge();
+    er.get_qr().v = org;
+    er.sym().get_qr().v = dst;
+    return er;
 }

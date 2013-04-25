@@ -19,8 +19,33 @@
 
 typedef int vertex;
 
-// TODO? make this into a proper class?
-typedef std::vector<Point2>* V_BUFFER;
+// essentially a vertex->Point2 translation class
+class vertex_buffer {
+public:
+    vertex_buffer(std::vector<geometric::Point2>* buf): 
+        vbf(buf) { }
+    geometric::Point2& val(vertex i) {
+        return (*vbf)[i];
+    }
+    double distance(vertex i, vertex j) {
+        return geometric::distance(val(i), val(j));    
+    }
+    double orient2d(vertex i, vertex j, vertex k) {
+        return geometric::orient2d(val(i), val(j), val(k));
+    }
+    double incircle(vertex i, vertex j, vertex k, vertex l) {
+        return geometric::incircle(val(i), val(j), val(k), val(l));
+    }
+    bool leftof(vertex i, vertex j, vertex k) {
+        return geometric::leftof(val(i), val(j), val(k));
+    }
+    
+    bool rightof(vertex i, vertex j, vertex k) {
+        return geometric::rightof(val(i), val(j), val(k));
+    }
+private:
+    std::vector<geometric::Point2>* vbf;
+};
 
 // returns true iff v is the representation of the ghost vertex
 inline bool is_ghost(const vertex& v) { 

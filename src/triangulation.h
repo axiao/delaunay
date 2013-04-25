@@ -11,12 +11,12 @@
 class Triangulation
 {
     public:
-        virtual Triangulation() = 0;
-        virtual ~Triangulation() = 0;
-        virtual void init(V_BUFFER) = 0;
+        Triangulation();
+        ~Triangulation();
+        virtual void init(vertex_buffer*);
         // TODO triangulation expected methods
     private:
-        V_BUFFER v_buf;
+        vertex_buffer* v_buf;
 };
 
 #endif
