@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <stack>
 
 #include "quadedge.h"
@@ -125,27 +126,23 @@ Edge_Record make_edge() {
 }
 
 // splice the edges with orgs a.get_qr() and b.get_qr()
-void splice(Edge_Record a_er, Edge_Record b_er) {
-    Q_Record a_org, a_lp, b_org, b_lp; 
-    Edge_Record a_ner, a_ler, b_ner, b_ler;
+void splice(Edge_Record a, Edge_Record b) {
+    Edge_Record alpha, beta, a_onext, b_onext, alpha_onext, beta_onext;
 
-    // handle the org rings (primal)
-    a_org = a_er.get_qr();
-    b_org = b_er.get_qr();
-    a_ner = a_er.onext();
-    b_ner = b_er.onext();
+    alpha = a.onext().rot();
+    beta = b.onext().rot();
 
-    a_org.set_next(b_ner);
-    b_org.set_next(a_ner);
+    // swap a.onext and b.onext
+    a_onext = a.onext();
+    b_onext = b.onext();
+    a.get_qr().set_next(b_onext);
+    b.get_qr().set_next(a_onext);
 
-    // handle the left rings (dual)
-    a_ler = a_er.rot_inv();
-    a_lp = a_er.lprev().get_qr();
-    b_ler = b_er.rot_inv();
-    b_lp = b_er.lprev().get_qr();
-
-    a_lp.set_next(b_ler);
-    b_lp.set_next(a_ler);
+    // swap alpha.onext and beta.onext
+    alpha_onext = alpha.onext();
+    beta_onext = beta.onext();
+    alpha.get_qr().set_next(beta_onext);
+    beta.get_qr().set_next(alpha_onext);
 }
 
 // derived topological operators
@@ -199,14 +196,16 @@ std::string serialize_triangles(edge hull_edge) {
     // use the oleft (aka rot_inv()) of each ccw edge and its next to find faces
     // do another round to untag all
     // ... or be a tool and use a hashtable to record visited faces + dfs
+    std::cout << "print with input " << hull_edge << std::endl;
 
     // mark all hull edges as visited (we don't return the open face)
     edge e, e1, e2;
-
+    //TODO currently, it seems the input edge is clockwise...?
     std::cout << "visiting ... " << std::flush;
     e = hull_edge.sym();
     while (not (e.get_qr().data)) {
         e.get_qr().data = (void*) true; // visited
+        std::cout << "hull(" << e << ") ";
         e = e.lnext();
     }
 
@@ -224,21 +223,25 @@ std::string serialize_triangles(edge hull_edge) {
         if (not (e.get_qr().data)) {
             // visit the triangle left of e, mark e and all adjoining edges
             // add the sym() of each visited edge except e
-            std::string triangle = "";
+            std::stringstream ss;
+            std::cout << e << "+";
             e1 = e.lnext();
-            std::cout << e1.org() << " ";
+            std::cout << e1 << "+";
             e2 = e1.lnext();
-            std::cout << e2.org() << " ";
+            std::cout << e2 << "=";
             // assert e == e2.lnext()
-            triangle += e.org() + " ";
+            ss << e.org() << " ";
             e.get_qr().data = (void*) true;
-            triangle += e1.org() + " ";
+            ss << e1.org() << " ";
             e1.get_qr().data = (void*) true;
             fringe.push(e1.sym());
-            triangle += e2.org();
+            ss << e2.org() << "\n";
             e2.get_qr().data = (void*) true;
             fringe.push(e2.sym());
-            output += triangle + "\n";
+
+            std::string triangle = ss.str();
+            std::cout << triangle << " ";
+            output += triangle;
         }
     }
 
@@ -272,7 +275,6 @@ std::string serialize_triangles(edge hull_edge) {
             fringe.push(e2.sym());
         }
     }
-    std::cout << std::endl;
 
     return output;
 }

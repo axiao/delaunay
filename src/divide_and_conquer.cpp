@@ -24,12 +24,16 @@ edge edge_pair::operator[](size_t i) {
 }
 
 
+// outputs the edge_pair (le, re)
+// le: counterclockwise convex hull edge out of the leftmost vertex
+// re: clockwise convex hull edge out of the rightmost vertex
 edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
     // assumes that v is sorted in lexicographic order
-    edge_pair ldo_ldi, rdo_rdi;
+    edge_pair ldo_ldi, rdi_rdo;
     edge a, b, c, ldo, ldi, rdo, rdi, basel, lcand, rcand, temp;
     vertex *v_l, *v_r;
     size_t v_l_n, v_r_n;
+    bool lcand_valid, rcand_valid;
 
     if (n == 2) { 
         // for two vertices, return the two directed edges between them
@@ -65,28 +69,20 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         ldo_ldi = delaunay_dc(v_l, v_l_n, p); // returns a size 2 array
         ldo = ldo_ldi[0];
         ldi = ldo_ldi[1];
-        rdo_rdi = delaunay_dc(v_r, v_r_n, p); // returns a size 2 array
-        rdo = rdo_rdi[0];
-        rdi = rdo_rdi[1];
+        rdi_rdo = delaunay_dc(v_r, v_r_n, p); // returns a size 2 array
+        rdi = rdi_rdo[0];
+        rdo = rdi_rdo[1];
 
-        std::cout << "left (ldo(" << 
-            ldo.org() << "," << ldo.dst() << "),ldi(" <<
-            ldi.org() << "," << ldi.dst() << "))" << std::endl;
-        std::cout << serialize_triangles(ldo);
-        std::cout << serialize_triangles(ldi);
-        std::cout << "right(rdo(" << 
-            rdo.org() << "," << rdo.dst() << "),rdi(" <<
-            rdi.org() << "," << rdi.dst() << "))" << std::endl;
-        std::cout << serialize_triangles(rdo);
-        std::cout << serialize_triangles(rdi);
+        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
+        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
 
         // loop to compute lower common tangent of l and r
         while (true) {
             if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
-                std::cout << "swapped ldi" << std::endl;
+                std::cout << "swapped ldi for ldi.lnext" << std::endl;
                 ldi = ldi.lnext();
             } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
-                std::cout << "swapped rdi" << std::endl;
+                std::cout << "swapped rdi for rdi.rprev" << std::endl;
                 rdi = rdi.rprev();
             } else {
                 break;
@@ -94,49 +90,46 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         }
 
         std::cout << "computing lower common tangent" << std::endl;
-        std::cout << "left (ldo(" << 
-            ldo.org() << "," << ldo.dst() << "),ldi(" <<
-            ldi.org() << "," << ldi.dst() << "))" << std::endl;
-        std::cout << serialize_triangles(ldo);
-        std::cout << serialize_triangles(ldi);
-        std::cout << "right(rdo(" << 
-            rdo.org() << "," << rdo.dst() << "),rdi(" <<
-            rdi.org() << "," << rdi.dst() << "))" << std::endl;
-        std::cout << serialize_triangles(rdo);
-        std::cout << serialize_triangles(rdi);
+        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
+        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
 
         // create the first cross edge basel from rdi.org to ldi.org
         basel = connect(rdi.sym(), ldi);
-        std::cout << "basel: (" << basel.org() << "," << basel.dst() << ")" << std::endl;
+        std::cout << "basel: " << basel << std::endl;
         if (ldi.org() == ldo.org()) {
             ldo = basel.sym();
+            std::cout << "swapped ldo for basel.sym: " << ldo << std::endl;
         }
         if (rdi.org() == rdo.org()) {
             rdo = basel;
+            std::cout << "swapped rdo for basel: " << rdo << std::endl;
         }
-        std::cout << "basel's stuff: " << basel.onext() << " " <<
-            basel.oprev() << " " << basel.sym().onext() << " " <<
-            basel.sym().oprev() << std::endl;;
+        std::cout << "basel's onext, oprev: org(" << basel.onext() << " " <<
+            basel.oprev() << "), sym(" << basel.sym().onext() << " " <<
+            basel.sym().oprev() << ")" << std::endl;;
 
         // merge loop
         while (true) {
+            std::cout << "basel: " << basel << std::endl;
+            // is lcand valid?
             lcand = basel.sym().onext();
-            std::cout << "lcand: (" << lcand.org() << "," << lcand.dst() << ")" << std::endl;
-            if (p.rightof(lcand.dst(), basel.org(), basel.dst())) {
-                std::cout << "lcand valid: (" << lcand.org() << "," << 
-                    lcand.dst() << ")" << std::endl;
-                while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst())) {
+            lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
+            std::cout << "lcand: " << lcand << std::endl;
+            if (lcand_valid) {
+                std::cout << "lcand valid: " << lcand << std::endl;
+                while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0) {
                     temp = lcand.onext();
                     delete_edge(lcand);
                     lcand = temp;
                 }
             }
+            // is rcand valid?
             rcand = basel.oprev();
-            std::cout << "rcand: (" << rcand.org() << "," << rcand.dst() << ")" << std::endl;
-            if (p.rightof(rcand.dst(), basel.org(), basel.dst())) {
-                std::cout << "rcand valid: (" << rcand.org() << "," << 
-                    rcand.dst() << ")" << std::endl;
-                while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst())) {
+            rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
+            std::cout << "rcand: " << rcand << std::endl;
+            if (rcand_valid) {
+                std::cout << "rcand valid: " << rcand << std::endl;
+                while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0) {
                     temp = rcand.oprev();
                     delete_edge(rcand);
                     rcand = temp;
@@ -145,23 +138,28 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             // if both lcand and rcand are invalid, 
             // then basel is the upper common tangent
             // ... break out of merge loop
-            if ((not p.rightof(lcand.dst(), basel.org(), basel.dst())) and 
-                (not p.rightof(rcand.dst(), basel.org(), basel.dst()))) {
+            if ((not lcand_valid) and (not rcand_valid)) {
+                std::cout << "done here (basel is upper common tangent)" << std::endl;
                 break;
             }
+
             // the next cross edge is to be connected to either 
             // lcand.dst() or rcand.dst() 
             // if both valid, choose the appropriate one using incircle test
-            if ((not p.rightof(lcand.dst(), basel.org(), basel.dst())) or
-                ((p.rightof(rcand.dst(), basel.org(), basel.dst()) and 
-                    p.incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())))) {
+            if ((not lcand_valid) or ((rcand_valid and 
+                (p.incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())) > 0))) {
                 // add cross edge basel from rcand.dst() to basel.dst()
+                std::cout << "chose rcand " << rcand << std::endl;
                 basel = connect(rcand, basel.sym());
             } else {
                 // add cross edge basel from basel.org() to lcand.dst()
+                std::cout << "chose lcand " << lcand << std::endl;
                 basel = connect(basel.sym(), lcand.sym());
             }
         }
+        std::cout << "final output edges" << std::endl;
+        std::cout << "ldo: " << ldo << std::endl;
+        std::cout << "rdo: " << rdo << std::endl;
 
         return edge_pair(ldo, rdo);
     }

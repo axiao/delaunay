@@ -86,10 +86,10 @@ int main() {
         cout << endl;
         cout << "left edge: (" << le_re[0].org() << "," << le_re[0].dst() << ")" << endl;
         cout << "right edge: (" << le_re[1].org() << "," << le_re[1].dst() << ")" << endl;
-        cout << "... basel is not linked properly by connect()." << endl;
 
 
-        //cout << serialize_triangles(le_re[1]) << endl;
+        cout << serialize_triangles(le_re[0]) << flush;
+        //cout << "... basel is not linked properly by connect()." << endl;
 
 
     } else {
