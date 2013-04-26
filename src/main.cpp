@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <math.h>
 
 #include "geometric.h"
 #include "vertex.h"
@@ -25,6 +24,7 @@ int main() {
     // read vertices in from input
     string line;
     ifstream nodefile;
+    ofstream elefile;
 
     nodefile.open("test.node");
     if (nodefile.is_open()) {
@@ -88,12 +88,25 @@ int main() {
         cout << "right edge: (" << le_re[1].org() << "," << le_re[1].dst() << ")" << endl;
 
 
-        cout << serialize_triangles(le_re[0]) << flush;
-        //cout << "... basel is not linked properly by connect()." << endl;
-
+        string triangles = serialize_triangles(le_re[0]);
+        size_t tri_count = 0;//count(triangles.begin(), triangles.end(), '\n');
+        string result;
+        istringstream iss(triangles);
+        for (string line; getline(iss, line);) {
+            stringstream ss;
+            ss << (++tri_count);
+            result += ss.str() + " " + line + "\n";
+        }
+        stringstream ss;
+        ss << tri_count;
+        
+        elefile.open("test.ele");
+        elefile << ss.str() << " 3 0\n";
+        elefile << result;
+        elefile.close();
 
     } else {
-        cout << "unable to open file" << endl;
+        cout << "unable to open input file" << endl;
         return 1;
     }
 

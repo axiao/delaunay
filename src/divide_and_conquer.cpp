@@ -113,8 +113,8 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             std::cout << "basel: " << basel << std::endl;
             // is lcand valid?
             lcand = basel.sym().onext();
-            lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             std::cout << "lcand: " << lcand << std::endl;
+            lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             if (lcand_valid) {
                 std::cout << "lcand valid: " << lcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0) {
@@ -125,8 +125,8 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             }
             // is rcand valid?
             rcand = basel.oprev();
-            rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             std::cout << "rcand: " << rcand << std::endl;
+            rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             if (rcand_valid) {
                 std::cout << "rcand valid: " << rcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0) {
@@ -157,9 +157,9 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
                 basel = connect(basel.sym(), lcand.sym());
             }
         }
-        std::cout << "final output edges" << std::endl;
-        std::cout << "ldo: " << ldo << std::endl;
-        std::cout << "rdo: " << rdo << std::endl;
+        std::cout << "***final output edges" << std::endl;
+        std::cout << "***ldo: " << ldo << std::endl;
+        std::cout << "***rdo: " << rdo << std::endl;
 
         return edge_pair(ldo, rdo);
     }
