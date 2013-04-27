@@ -211,6 +211,7 @@ size_t partition(vertex arr[], size_t left, size_t right, size_t piv, vertex_buf
 
 void quicksort(vertex arr[], size_t left, size_t right, vertex_buffer p) {
     size_t pivot_index;
+    std::cout << left << " " << right << std::endl;
     if (left < right) {
         pivot_index = left + (std::rand() % (right - left + 1));
         pivot_index = partition(arr, left, right, pivot_index, p);
