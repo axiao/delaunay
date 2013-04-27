@@ -19,8 +19,6 @@ int main() {
     size_t num_v, dim, num_attr, num_bd_m, vn;
     double vx, vy;
 
-    // TODO make an array as well
-
     // read vertices in from input
     string line;
     ifstream nodefile;
