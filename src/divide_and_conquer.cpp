@@ -214,9 +214,14 @@ void quicksort(vertex arr[], size_t left, size_t right, vertex_buffer p) {
     std::cout << left << " " << right << std::endl;
     if (left < right) {
         pivot_index = left + (std::rand() % (right - left + 1));
+        std::cout << pivot_index << std::endl;
         pivot_index = partition(arr, left, right, pivot_index, p);
-        quicksort(arr, left, pivot_index-1, p);
-        quicksort(arr, pivot_index+1, right, p);
+        if (pivot_index > left) {
+            quicksort(arr, left, pivot_index-1, p);
+        }
+        if (pivot_index < right) {
+            quicksort(arr, pivot_index+1, right, p);
+        }
     }
 }
 
