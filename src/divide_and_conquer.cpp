@@ -92,9 +92,7 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
                 std::cout << "swapped ldi for ldi.lnext" << std::endl;
                 ldi = ldi.lnext();
             } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
-            //} else if (not p.leftof(ldi.org(), rdi.org(), rdi.dst())) {
                 std::cout << "swapped rdi for rdi.rprev" << std::endl;
-                //rdi = rdi.rprev();
                 rdi = rdi.rnext();
             } else {
                 break;

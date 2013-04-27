@@ -26,7 +26,7 @@ int main() {
     ifstream nodefile;
     ofstream elefile;
 
-    nodefile.open("test.node");
+    nodefile.open("t.node");
     if (nodefile.is_open()) {
         while(getline(nodefile >> ws, line)) {
             if (line != "" and line[0] != '#') {
@@ -100,7 +100,7 @@ int main() {
         stringstream ss;
         ss << tri_count;
         
-        elefile.open("test.ele");
+        elefile.open("t.ele");
         elefile << ss.str() << " 3 0\n";
         elefile << result;
         elefile.close();
