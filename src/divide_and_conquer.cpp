@@ -37,11 +37,16 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
 
     if (n == 2) { 
         // for two vertices, return the two directed edges between them
+        std::cout << "***TWO VERTICES" << std::endl;
         a = make_edge(v[0], v[1]);
+        std::cout << "***final output edges" << std::endl;
+        std::cout << "***le: " << a << std::endl;
+        std::cout << "***re: " << a.sym() << std::endl;
         return edge_pair(a, a.sym());
 
     } else if (n == 3) {
         // for three vertices
+        std::cout << "***THREE VERTICES" << std::endl;
         a = make_edge();
         b = make_edge();
         splice(a.sym(), b);
@@ -49,6 +54,8 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         a.set_dst(v[1]);
         b.set_org(v[1]);
         b.set_dst(v[2]);
+        std::cout << "created edge " << a << std::endl;
+        std::cout << "created edge " << b << std::endl;
         if (p.orient2d(v[0], v[1], v[2]) > 0) {
             c = connect(b, a);
             return edge_pair(a, b.sym());
@@ -73,17 +80,22 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         rdi = rdi_rdo[0];
         rdo = rdi_rdo[1];
 
+        std::cout << "***FOUR+ VERTICES" << std::endl;
+
         std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
         std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
 
         // loop to compute lower common tangent of l and r
+        // TODO edge cases really mess this up
         while (true) {
             if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
                 std::cout << "swapped ldi for ldi.lnext" << std::endl;
                 ldi = ldi.lnext();
             } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
+            //} else if (not p.leftof(ldi.org(), rdi.org(), rdi.dst())) {
                 std::cout << "swapped rdi for rdi.rprev" << std::endl;
-                rdi = rdi.rprev();
+                //rdi = rdi.rprev();
+                rdi = rdi.rnext();
             } else {
                 break;
             }
@@ -158,8 +170,8 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             }
         }
         std::cout << "***final output edges" << std::endl;
-        std::cout << "***ldo: " << ldo << std::endl;
-        std::cout << "***rdo: " << rdo << std::endl;
+        std::cout << "***le: " << ldo << std::endl;
+        std::cout << "***re: " << rdo << std::endl;
 
         return edge_pair(ldo, rdo);
     }
