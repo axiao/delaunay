@@ -70,13 +70,18 @@ int main() {
         edge_pair le_re;
         lexico_sort(vertices, num_v, p);
 
-        cout << "sorted verts: ";
         for (size_t i = 0; i < num_v; ++i) {
             cout << vertices[i] << " ";
+            cout << p.val(vertices[i]) << " ";
         }
         cout << endl;
         cout << "===triangulating ..." << endl;
         le_re = delaunay_dc(vertices, num_v, p);
+
+        //le_re = delaunay_dc2(vertices, num_v, p);
+
+
+
 
         cout << "num_v: " << num_v << endl;
         cout << "vertices: ";

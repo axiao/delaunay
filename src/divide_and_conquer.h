@@ -30,11 +30,11 @@ edge_pair delaunay_dc2(vertex[], size_t, vertex_buffer);
 
 // sorts the vertex set by x-coordinate, breaking ties by y-coordinate
 void lexico_sort(vertex[], size_t, vertex_buffer);
-size_t partition(vertex[], size_t, size_t, size_t, vertex_buffer);
+//size_t partition(vertex[], size_t, size_t, size_t, vertex_buffer);
 void quicksort(vertex[], size_t, size_t, vertex_buffer);
 
 // partitions the vertex set about the medial element on the x or y axis
 // returns the index of the index of the medial element (ie quickselect)
-int lexico_partition(vertex[], size_t, bool, vertex_buffer);
+size_t lexico_partition(vertex[], size_t, bool, vertex_buffer);
 
 #endif
