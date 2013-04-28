@@ -461,7 +461,7 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             if (lcand_valid) {
                 std::cout << "lcand valid: " << lcand << std::endl;
-                while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0.0) {
+                while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0) {
                     temp = lcand.onext();
                     delete_edge(lcand);
                     lcand = temp;
@@ -473,7 +473,7 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             if (rcand_valid) {
                 std::cout << "rcand valid: " << rcand << std::endl;
-                while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0.0) {
+                while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0) {
                     temp = rcand.oprev();
                     delete_edge(rcand);
                     rcand = temp;

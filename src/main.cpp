@@ -17,7 +17,7 @@ using namespace geometric;
 int main() {
 
     size_t num_v, dim, num_attr, num_bd_m, vn;
-    double vx, vy;
+    long double vx, vy;
 
     // read vertices in from input
     string line;
@@ -66,10 +66,6 @@ int main() {
         vector<Point2>* vec_p = new vector<Point2>(points, points+num_v+1);
         vertex_buffer p(vec_p);
         edge_pair le_re;
-
-        cout << p.incircle(9, 4, 5, 10) << endl;
-        cout << (p.incircle(4, 9, 10, 5) > 0) << endl;
-        return 1;
 /*
         cout << "===sorting vertices" << endl;
         lexico_sort(vertices, num_v, p);
