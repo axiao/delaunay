@@ -8,11 +8,19 @@
 #include <math.h>
 #include <iostream>
 
+extern "C" {
+#include "predicates.h"
+};
+
 namespace geometric {
 
-/*
- * simple 2d point class
- */
+
+// initializes the robust predicate library
+inline void init() {
+    exactinit();
+}
+
+// simple 2d point class
 class Point2 
 {
     public:
@@ -71,45 +79,9 @@ inline std::ostream& operator<<(std::ostream& strm, const Point2& a) {
     return strm << "(" << a.x << "," << a.y << ")";
 }
 
-/*
- * oriented edge in 2d, org->dst
- */
-class Edge2
-{
-    public:
-        Edge2() : org(Point2(0, 0)), dst(Point2(0, 0)) { }
-        Edge2(Point2 o, Point2 d) : org(o), dst(d) { }
-        ~Edge2() { }
-        bool operator==(const Edge2& e) { 
-            return (org == e.org) && (dst == e.dst);
-        }
-        bool operator!=(const Edge2& e) { 
-            return (org != e.org) || (dst != e.dst);
-        }
-        Point2 org; // origin of oriented edge
-        Point2 dst; // destination of oriented edge
-};
-
-/*
- * oriented triangle in 2d
- * positive orientation means that orient2d(u, v, w) returns >0
- */
-class Triangle2
-{
-    public:
-        Triangle2() : u(Point2(0, 0)), v(Point2(0, 0)), w(Point2(0, 0)) { }
-        Triangle2(Point2 pu, Point2 pv, Point2 pw) : u(pu), v(pv), w(pw) { }
-        ~Triangle2() { }
-        Point2 u;
-        Point2 v;
-        Point2 w;
-};
 
 
-
-/*
- * distance between 2 points in 2d
- */
+// distance between 2 points in 2d
 inline long double distance(const Point2& p1, const Point2& p2) 
 {
     long double a = (p1.x - p2.x);
@@ -117,17 +89,13 @@ inline long double distance(const Point2& p1, const Point2& p2)
     return sqrt(a*a + b*b);
 }
 
-/*
- * abc are: ccw >0, colinear =0, cw <0
- */
+// abc are: ccw >0, colinear =0, cw <0
 inline long double orient2d(const Point2& a, const Point2& b, const Point2& c)
 {
     return (a.x - c.x) * (b.y - c.y) - (b.x - c.x) * (a.y - c.y);
 }
 
-/*
- * d is, with circle abc: inside >0, cocircular =0, outside <0  
- */
+// d is, with circle abc: inside >0, cocircular =0, outside <0  
 inline long double incircle(const Point2& a, const Point2& b, const Point2& c, 
                        const Point2& d)
 {

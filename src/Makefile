@@ -2,10 +2,11 @@
 
 DT = $(shell echo `pwd`/../delaunay)
 
-CXXFLAGS = -c -g -Wall -std=c++0x
+CXXFLAGS = -c -g -Wall -std=c++0x -O3
 
 # List of C++ sources
-SRCS = main.cpp triangulation.cpp linkring.cpp quadedge.cpp \
+SRCS = main.cpp \
+	quadedge.cpp \
 	divide_and_conquer.cpp
 
 # List of C++ object files
