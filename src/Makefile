@@ -9,8 +9,12 @@ SRCS = main.cpp \
 	quadedge.cpp \
 	divide_and_conquer.cpp
 
+# List of C sources
+CSRCS = predicates.c
+
 # List of C++ object files
 OBJS = $(SRCS:.cpp=.o)
+COBJS = $(CSRCS:.c=.o)
 
 .PHONY: default compile ../delaunay .cpp.o check clean
 
@@ -18,10 +22,13 @@ default: compile
 
 compile: ../delaunay
 
-../delaunay: $(OBJS)
-	$(CXX) $(OBJS) -o $@
+../delaunay: $(OBJS) $(COBJS)
+	$(CXX) $(OBJS) $(COBJS) -o $@
 
 .cpp.o:
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+.c.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 check:

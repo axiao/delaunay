@@ -27,13 +27,13 @@ public:
     geometric::Point2& val(vertex i) {
         return (*vbf)[i];
     }
-    long double distance(vertex i, vertex j) {
+    double distance(vertex i, vertex j) {
         return geometric::distance(val(i), val(j));    
     }
-    long double orient2d(vertex i, vertex j, vertex k) {
+    double orient2d(vertex i, vertex j, vertex k) {
         return geometric::orient2d(val(i), val(j), val(k));
     }
-    long double incircle(vertex i, vertex j, vertex k, vertex l) {
+    double incircle(vertex i, vertex j, vertex k, vertex l) {
         return geometric::incircle(val(i), val(j), val(k), val(l));
     }
     bool leftof(vertex i, vertex j, vertex k) {

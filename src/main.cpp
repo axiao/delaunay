@@ -17,7 +17,7 @@ using namespace geometric;
 int main() {
 
     size_t num_v, dim, num_attr, num_bd_m, vn;
-    long double vx, vy;
+    double vx, vy;
 
     // read vertices in from input
     string line;
@@ -65,9 +65,11 @@ int main() {
         }
         vector<Point2>* vec_p = new vector<Point2>(points, points+num_v+1);
         vertex_buffer p(vec_p);
+
+        exactinit();
         edge_pair le_re;
 
-        cout << "===sorting vertices" << endl;
+/*        cout << "===sorting vertices" << endl;
         lexico_sort(vertices, num_v, p);
 
         for (size_t i = 0; i < num_v; ++i) {
@@ -77,10 +79,10 @@ int main() {
         cout << endl;
         cout << "===triangulating ..." << endl;
         le_re = delaunay_dc(vertices, num_v, p);
-
-/*        cout << "===triangulating ..." << endl;
-        le_re = delaunay_dc2(vertices, num_v, true, p);
 */
+        cout << "===triangulating ..." << endl;
+        le_re = delaunay_dc2(vertices, num_v, true, p);
+
         cout << "num_v: " << num_v << endl;
         cout << "vertices: ";
         for (size_t i = 0; i < num_v; ++i) {
