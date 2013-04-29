@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <string>
 
 #include "geometric.h"
 #include "vertex.h"
@@ -20,7 +21,7 @@ using namespace geometric;
 void print_usage() {
     cout << "usage: delaunay " << 
         "[-h | --help] [-t | --time] [-a | --algorithm <alg>] " << 
-        "[-o <output file>] <node file>" << endl;
+        "[-o <output file>] <file.node>" << endl;
 }
 
 void print_help() {
@@ -30,15 +31,31 @@ void print_help() {
     cout << "\t" << "-h, --help" << "\t" <<
         "display this message" << endl;
     cout << "\t" << "-o, --output" << "\t" <<
-        "file to write output to (in .ele format), " << "\n\t\t\t" <<
-        "default: a.ele" << endl;
+        "output file path " << "\n\t\t\t" <<
+        "default: for argument *.node, makes *.ele" << endl;
     cout << "\t" << "-a, --algorithm" << "\t" <<
         "triangulation algorithm to use: " << "\n\t\t\t\t" <<
-        "VC (divide/conquer vertical cuts), " << "\n\t\t\t\t" <<
-        "AC (divide/conquer alternating cuts), " << "\n\t\t\t" <<
+        "VC (divide/conquer vertical cuts) " << "\n\t\t\t\t" <<
+        "AC (divide/conquer alternating cuts) " << "\n\t\t\t" <<
         "default: AC" << endl;
     cout << "\t" << "-t, --time" << "\t" <<
         "output triangulation running time (in seconds)" << endl;
+}
+
+string getFileExt(const string& s) {
+    size_t i = s.rfind('.', s.length());
+    if (i != string::npos) {
+        return (s.substr(i + 1, s.length() - i));
+    }
+    return ("");
+}
+
+string getFileName(const string& s) {
+    size_t i = s.rfind('.', s.length());
+    if (i != string::npos) {
+        return (s.substr(0, i));
+    }
+    return ("");
 }
 
 
@@ -114,6 +131,14 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         filename = argv[optind];
+
+        // verify file extension
+        string extension = getFileExt(filename);
+        string no_extension = getFileName(filename);
+        if (extension != "node" or no_extension == "") {
+            cerr << "Error: input must have file extension .node" << endl;
+            return 1;
+        }
 
         nodefile.open(filename);
         if (nodefile.is_open()) {
@@ -197,9 +222,12 @@ int main(int argc, char* argv[]) {
             stringstream ss;
             
             if (outfile == NULL) {
-                cout << "Output to: a.ele" << endl;
-                elefile.open("a.ele");
+                // compute the correct output filename (.node:.ele)
+                no_extension = no_extension + ".ele";
+                cout << "Output to: " << no_extension << endl;
+                elefile.open(no_extension);
             } else {
+                // otherwise, use the provided target
                 cout << "Output to: " << outfile << endl;
                 elefile.open(outfile);
             }

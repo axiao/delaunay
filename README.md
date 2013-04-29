@@ -2,8 +2,8 @@ delaunay
 ========
 A Delaunay triangulator.
 
-Currently the quad-edge datastructure for planar subdivisions described in a 
-paper by Guibas and Stolfi, 
+Currently uses the quad-edge data structure for planar subdivisions described 
+in a paper by Guibas and Stolfi, 
 [Primitives for the Manipulation of General Subdivisions and the Computation of 
 Voronoi Diagrams](http://portal.acm.org/citation.cfm?doid=282918.282923), 
 ACM Transactions on Graphics 4(2):74–123, April 1985,
