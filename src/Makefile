@@ -3,6 +3,7 @@
 DT = $(shell echo `pwd`/../delaunay)
 
 CXXFLAGS = -c -g -Wall -std=c++0x -O3
+CCFLAGS = -c -O3
 
 # List of C++ sources
 SRCS = main.cpp \
@@ -16,20 +17,20 @@ CSRCS = predicates.c
 OBJS = $(SRCS:.cpp=.o)
 COBJS = $(CSRCS:.c=.o)
 
-.PHONY: default compile ../delaunay .cpp.o check clean
+.PHONY: default compile .cpp.o check clean
 
 default: compile
 
 compile: ../delaunay
 
-../delaunay: $(OBJS) $(COBJS)
+../delaunay: $(COBJS) $(OBJS) 
 	$(CXX) $(OBJS) $(COBJS) -o $@
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 .c.o:
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CC) $(CCFLAGS) $< -o $@
 
 check:
 	$(MAKE) -C .. check

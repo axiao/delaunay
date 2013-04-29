@@ -149,8 +149,6 @@ void splice(Edge_Record a, Edge_Record b) {
 
 // connects the a.dst to b.org through a new edge
 edge connect(edge a, edge b) {
-    std::cout << "connecting: " << a << ", " << b << " for new edge (" <<
-        a.dst() << "," << b.org() << ")" << std::endl;
     Edge_Record er = make_edge();
     er.get_qr().v = a.dst();
     er.sym().get_qr().v = b.org();
@@ -161,7 +159,6 @@ edge connect(edge a, edge b) {
 
 // removes an edge er, deletes its corresponding quadedge.
 void delete_edge(edge er) {
-    std::cout << "deleted edge: " << er << std::endl;
     splice(er, er.oprev());
     splice(er.sym(), er.sym().oprev());
     delete er.q;
@@ -184,7 +181,6 @@ edge make_edge(vertex org, vertex dst) {
     Edge_Record er = make_edge();
     er.get_qr().v = org;
     er.sym().get_qr().v = dst;
-    std::cout << "added edge: " << er << std::endl;
     return er;
 }
 
@@ -192,25 +188,13 @@ edge make_edge(vertex org, vertex dst) {
 // <v1> <v2> <v3>
 // oriented counter clockwise, separated by newlines
 std::string serialize_triangles(edge hull_edge) {
-    // algorithm idea: tag the directed ccw edges of each face as we list them
-    // use the oleft (aka rot_inv()) of each ccw edge and its next to find faces
-    // do another round to untag all
-    // ... or be a tool and use a hashtable to record visited faces + dfs
-    std::cout << "print with input " << hull_edge << std::endl;
-
     // mark all hull edges as visited (we don't return the open face)
     edge e, e1, e2;
-    //TODO currently, it seems the input edge is clockwise...?
-    std::cout << "visiting ... " << std::endl;
-    std::cout << "hull: " << std::flush;
     e = hull_edge.sym();
     while (not (e.get_qr().data)) {
         e.get_qr().data = (void*) true; // visited
-        std::cout << e << " " << std::flush;
         e = e.lnext();
     }
-    std::cout << std::endl;
-    std::cout << "elements: " << std::endl;
 
     // perform dfs and mark all visited faces
     std::string output = "";
@@ -227,11 +211,8 @@ std::string serialize_triangles(edge hull_edge) {
             // visit the triangle left of e, mark e and all adjoining edges
             // add the sym() of each visited edge except e
             std::stringstream ss;
-            std::cout << e << " + ";
             e1 = e.lnext();
-            std::cout << e1 << " + ";
             e2 = e1.lnext();
-            std::cout << e2 << " = ";
             // assert e == e2.lnext()
             ss << e.org() << " ";
             e.get_qr().data = (void*) true;
@@ -243,12 +224,10 @@ std::string serialize_triangles(edge hull_edge) {
             fringe.push(e2.sym());
 
             std::string triangle = ss.str();
-            std::cout << triangle << std::flush ;
             output += triangle;
         }
     }
 
-    std::cout << "unvisiting ..." << std::flush;
     // unvisit the hull
     e = hull_edge.sym();
     while (e.get_qr().data) {
@@ -278,7 +257,6 @@ std::string serialize_triangles(edge hull_edge) {
             fringe.push(e2.sym());
         }
     }
-    std::cout << std::endl;
 
     return output;
 }

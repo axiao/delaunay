@@ -128,16 +128,11 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
 
     if (n == 2) { 
         // for two vertices, return the two directed edges between them
-        std::cout << "***TWO VERTICES" << std::endl;
         a = make_edge(v[0], v[1]);
-        std::cout << "***final output edges" << std::endl;
-        std::cout << "***le: " << a << std::endl;
-        std::cout << "***re: " << a.sym() << std::endl;
         return edge_pair(a, a.sym());
 
     } else if (n == 3) {
         // for three vertices
-        std::cout << "***THREE VERTICES" << std::endl;
         a = make_edge();
         b = make_edge();
         splice(a.sym(), b);
@@ -145,8 +140,6 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         a.set_dst(v[1]);
         b.set_org(v[1]);
         b.set_dst(v[2]);
-        std::cout << "created edge " << a << std::endl;
-        std::cout << "created edge " << b << std::endl;
         if (p.orient2d(v[0], v[1], v[2]) > 0) {
             c = connect(b, a);
             return edge_pair(a, b.sym());
@@ -171,18 +164,11 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
         rdi = rdi_rdo[0];
         rdo = rdi_rdo[1];
 
-        std::cout << "***FOUR+ VERTICES" << std::endl;
-
-        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
-        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
-
         // loop to compute lower common tangent of l and r
         while (true) {
             if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
-                std::cout << "swapped ldi for ldi.lnext" << std::endl;
                 ldi = ldi.lnext();
             } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
-                std::cout << "swapped rdi for rdi.rnext" << std::endl;
                 //rdi = rdi.rprev(); // Guibas and Stolfi wrong here?
                 rdi = rdi.rnext();
             } else {
@@ -190,34 +176,21 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             }
         }
 
-        std::cout << "computing lower common tangent" << std::endl;
-        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
-        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
-
         // create the first cross edge basel from rdi.org to ldi.org
         basel = connect(rdi.sym(), ldi);
-        std::cout << "basel: " << basel << std::endl;
         if (ldi.org() == ldo.org()) {
             ldo = basel.sym();
-            std::cout << "swapped ldo for basel.sym: " << ldo << std::endl;
         }
         if (rdi.org() == rdo.org()) {
             rdo = basel;
-            std::cout << "swapped rdo for basel: " << rdo << std::endl;
         }
-        std::cout << "basel's onext, oprev: org(" << basel.onext() << " " <<
-            basel.oprev() << "), sym(" << basel.sym().onext() << " " <<
-            basel.sym().oprev() << ")" << std::endl;;
 
         // merge loop
         while (true) {
-            std::cout << "basel: " << basel << std::endl;
             // is lcand valid?
             lcand = basel.sym().onext();
-            std::cout << "lcand: " << lcand << std::endl;
             lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             if (lcand_valid) {
-                std::cout << "lcand valid: " << lcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0) {
                     temp = lcand.onext();
                     delete_edge(lcand);
@@ -226,21 +199,21 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             }
             // is rcand valid?
             rcand = basel.oprev();
-            std::cout << "rcand: " << rcand << std::endl;
             rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             if (rcand_valid) {
-                std::cout << "rcand valid: " << rcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0) {
                     temp = rcand.oprev();
                     delete_edge(rcand);
                     rcand = temp;
                 }
             }
+
+            lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
+            rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             // if both lcand and rcand are invalid, 
             // then basel is the upper common tangent
             // ... break out of merge loop
             if ((not lcand_valid) and (not rcand_valid)) {
-                std::cout << "done here (basel is upper common tangent)" << std::endl;
                 break;
             }
 
@@ -250,17 +223,12 @@ edge_pair delaunay_dc(vertex v[], size_t n, vertex_buffer p) {
             if ((not lcand_valid) or ((rcand_valid and 
                 (p.incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())) > 0))) {
                 // add cross edge basel from rcand.dst() to basel.dst()
-                std::cout << "chose rcand " << rcand << std::endl;
                 basel = connect(rcand, basel.sym());
             } else {
                 // add cross edge basel from basel.org() to lcand.dst()
-                std::cout << "chose lcand " << lcand << std::endl;
                 basel = connect(basel.sym(), lcand.sym());
             }
         }
-        std::cout << "***final output edges" << std::endl;
-        std::cout << "***le: " << ldo << std::endl;
-        std::cout << "***re: " << rdo << std::endl;
 
         return edge_pair(ldo, rdo);
     }
@@ -275,20 +243,15 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
 
     if (n == 2) { 
         // for two vertices, return the two directed edges between them
-        std::cout << "***TWO VERTICES" << std::endl;
         if (point_lte(p.val(v[0]), p.val(v[1]), div_by_x)) {
             a = make_edge(v[0], v[1]);
         } else {
             a = make_edge(v[1], v[0]);
         }
-        std::cout << "***final output edges" << std::endl;
-        std::cout << "***le: " << a << std::endl;
-        std::cout << "***re: " << a.sym() << std::endl;
         return edge_pair(a, a.sym());
 
     } else if (n == 3) {
         // for three vertices
-        std::cout << "***THREE VERTICES" << std::endl;
         a = make_edge();
         b = make_edge();
         splice(a.sym(), b);
@@ -335,24 +298,19 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
         a.set_dst(second);
         b.set_org(second);
         b.set_dst(third);
-        std::cout << "created edge " << a << std::endl;
-        std::cout << "created edge " << b << std::endl;
         if (p.orient2d(first, second, third) > 0) {
             c = connect(b, a);
-            std::cout << "CASE1 output edges: " << a << ", " << b.sym() << std::endl;
             return edge_pair(a, b.sym());
         } else if (p.orient2d(first, third, second) > 0) {
             c = connect(b, a);
-            std::cout << "CASE2 output edges: " << c.sym() << ", " << c << std::endl;
             return edge_pair(c.sym(), c);
         } else { // the points are collinear
-            std::cout << "CASE3 output edges: " << a << ", " << b.sym() << std::endl;
             return edge_pair(a, b.sym());
         }
 
     } else { // n >= 4
+        // div_by_x tells whether this recursive case is splitting by x
         // divide v into left half v_l, right half v_r
-        // but on the opposite axis of whatever parent
         median = lexico_partition(v, n, div_by_x, p);
         v_l = v;
         v_l_n = median + 1; // +1 ensures that the lower partition has >=2
@@ -368,16 +326,6 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
         rdi_rdo = delaunay_dc2(v_r, v_r_n, !div_by_x, p);
         rdi = rdi_rdo[0]; // ccw, so right face is open
         rdo = rdi_rdo[1]; // cw, so left face is open
-
-        std::cout << "***FOUR+ VERTICES" << std::endl;
-        // div_by_x tells whether this recursive case is splitting by x
-        if (div_by_x) {
-            std::cout << "splitting this iteration on X axis" << std::endl;
-        } else {
-            std::cout << "splitting this iteration on Y axis" << std::endl;
-        }
-        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
-        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
 
         // move *di, *do into the correct "leftmost", "rightmost" for level
         if (div_by_x) {
@@ -415,17 +363,12 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
                 rdo = rdo.lprev();
             }
         }
-        std::cout << "shifting to right axis" << std::endl;
-        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
-        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
 
         // loop to compute lower common tangent of l and r
         while (true) {
             if (p.leftof(rdi.org(), ldi.org(), ldi.dst())) {
-                std::cout << "swapped ldi for ldi.lnext" << std::endl;
                 ldi = ldi.lnext();
             } else if (p.rightof(ldi.org(), rdi.org(), rdi.dst())) {
-                std::cout << "swapped rdi for rdi.rnext" << std::endl;
                 //rdi = rdi.rprev(); // Guibas and Stolfi wrong here?
                 rdi = rdi.rnext();
             } else {
@@ -433,34 +376,21 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             }
         }
 
-        std::cout << "computing lower common tangent" << std::endl;
-        std::cout << "ldo: " << ldo << " ldi: " << ldi << std::endl;
-        std::cout << "rdi: " << rdi << " rdo: " << rdo << std::endl;
-
         // create the first cross edge basel from rdi.org to ldi.org
         basel = connect(rdi.sym(), ldi);
-        std::cout << "basel: " << basel << std::endl;
         if (ldi.org() == ldo.org()) {
             ldo = basel.sym();
-            std::cout << "swapped ldo for basel.sym: " << ldo << std::endl;
         }
         if (rdi.org() == rdo.org()) {
             rdo = basel;
-            std::cout << "swapped rdo for basel: " << rdo << std::endl;
         }
-        std::cout << "basel's onext, oprev: org(" << basel.onext() << " " <<
-            basel.oprev() << "), sym(" << basel.sym().onext() << " " <<
-            basel.sym().oprev() << ")" << std::endl;;
 
         // merge loop
         while (true) {
-            std::cout << "basel: " << basel << std::endl;
             // is lcand valid?
             lcand = basel.sym().onext();
-            std::cout << "lcand: " << lcand << std::endl;
             lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             if (lcand_valid) {
-                std::cout << "lcand valid: " << lcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), lcand.dst(), lcand.onext().dst()) > 0) {
                     temp = lcand.onext();
                     delete_edge(lcand);
@@ -469,10 +399,8 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             }
             // is rcand valid?
             rcand = basel.oprev();
-            std::cout << "rcand: " << rcand << std::endl;
             rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
             if (rcand_valid) {
-                std::cout << "rcand valid: " << rcand << std::endl;
                 while (p.incircle(basel.dst(), basel.org(), rcand.dst(), rcand.oprev().dst()) > 0) {
                     temp = rcand.oprev();
                     delete_edge(rcand);
@@ -481,13 +409,10 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             }
             lcand_valid = p.rightof(lcand.dst(), basel.org(), basel.dst());
             rcand_valid = p.rightof(rcand.dst(), basel.org(), basel.dst());
-            std::cout << "new lcand: " << lcand << " valid? " << lcand_valid << std::endl;
-            std::cout << "new rcand: " << rcand << " valid? " << rcand_valid << std::endl;
             // if both lcand and rcand are invalid, 
             // then basel is the upper common tangent
             // ... break out of merge loop
             if ((not lcand_valid) and (not rcand_valid)) {
-                std::cout << "done here (basel is upper common tangent)" << std::endl;
                 break;
             }
 
@@ -497,22 +422,14 @@ edge_pair delaunay_dc2(vertex v[], size_t n, bool div_by_x, vertex_buffer p) {
             if ((not lcand_valid) or ((rcand_valid and 
                 (p.incircle(lcand.dst(), lcand.org(), rcand.org(), rcand.dst())) > 0))) {
                 // add cross edge basel from rcand.dst() to basel.dst()
-                std::cout << "chose rcand " << rcand << std::endl;
                 basel = connect(rcand, basel.sym());
             } else {
                 // add cross edge basel from basel.org() to lcand.dst()
-                std::cout << "chose lcand " << lcand << std::endl;
                 basel = connect(basel.sym(), lcand.sym());
             }
         }
-        std::cout << "***final output edges" << std::endl;
-        std::cout << "***le: " << ldo << std::endl;
-        std::cout << "***re: " << rdo << std::endl;
 
         return edge_pair(ldo, rdo);
     }
-
-    // TODO
-    return edge_pair(); 
 }
 

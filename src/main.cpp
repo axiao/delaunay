@@ -1,10 +1,11 @@
 // currently, testing
 
 #include <getopt.h>
-#include <vector>
+#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include "geometric.h"
 #include "vertex.h"
@@ -16,8 +17,28 @@ using namespace std;
 using namespace geometric;
 
 
+void print_usage() {
+    cout << "usage: delaunay " << 
+        "[-h | --help] [-t | --time] [-a | --algorithm <alg>] " << 
+        "[-o <output file>] <node file>" << endl;
+}
+
 void print_help() {
-    cout << "TODO HELP MESSAGE" << endl;
+    cout << "A delaunay triangulation program." << endl;
+    print_usage();
+    cout << "command line options:" << endl;
+    cout << "\t" << "-h, --help" << "\t" <<
+        "display this message" << endl;
+    cout << "\t" << "-o, --output" << "\t" <<
+        "file to write output to (in .ele format), " << "\n\t\t\t" <<
+        "default: a.ele" << endl;
+    cout << "\t" << "-a, --algorithm" << "\t" <<
+        "triangulation algorithm to use: " << "\n\t\t\t\t" <<
+        "VC (divide/conquer vertical cuts), " << "\n\t\t\t\t" <<
+        "AC (divide/conquer alternating cuts), " << "\n\t\t\t" <<
+        "default: AC" << endl;
+    cout << "\t" << "-t, --time" << "\t" <<
+        "output triangulation running time (in seconds)" << endl;
 }
 
 
@@ -29,10 +50,11 @@ int main(int argc, char* argv[]) {
     ifstream nodefile;
     ofstream elefile;
     char *filename = NULL;
-    char *outfile = "a.ele";
+    char *outfile = NULL;
+    clock_t time_start = 0;
 
     int help = 0;
-    int time = 0;
+    int timing = 0;
     string algorithm = "AC";
     int alg_choice;
     int c;
@@ -41,7 +63,7 @@ int main(int argc, char* argv[]) {
             {
                 /* flag options */
                 {"help", no_argument, &help, 1},
-                {"time", no_argument, &time, 1},
+                {"time", no_argument, &timing, 1},
                 /* argument options */
                 {"algorithm", required_argument, NULL, 'a'},
                 {"output", required_argument, NULL, 'o'},
@@ -49,61 +71,50 @@ int main(int argc, char* argv[]) {
             };
         int options_index = 0;
 
-        c = getopt_long(argc, argv, "hta:", long_options, &options_index);
+        c = getopt_long(argc, argv, "h?ta:o:", long_options, &options_index);
         if (c == -1) { 
             break; 
         }
         switch (c) {
-        case 0:
-            if (long_options[options_index].flag != 0) {
-                break;
-            }
-            cout << "options " << long_options[options_index].name << endl;
-            if (optarg) {
-                cout << " with option " << optarg << endl;
-            }
-            break;
         case 'h':
             ++help;
             break;
         case 't':
-            ++time;
+            ++timing;
             break;
         case 'a':
-            cout << "option -a " << optarg << endl;
             algorithm = string(optarg);
             break;
         case 'o':
-            cout << "option -o " << optarg << endl;
             outfile = optarg;
             break;
+        case '?':
+            break;
         default:
-            cout << "huh?" << endl;
+            break;
         }
     }
     // process non-options (arguments)
-    cout << "time: " << time << endl;
-    cout << "help: " << help << endl;
     if (!help and (optind + 1 != argc)) {
-        cerr << "usage: delaunay [filename]" << endl;
+        print_usage();
         return 1;
     } else if (help) {
         print_help();
         return 0;
     } else {
         if (algorithm == "AC") {
+            cout << "Algorithm: alternating cuts" << endl;
             alg_choice = 0;
         } else if (algorithm == "VC") {
+            cout << "Algorithm: vertical cuts only" << endl;
             alg_choice = 1;
         } else {
-            cerr << "Error: unrecognized algorithm choice " << 
-                algorithm  << endl;
+            cerr << "Error: unrecognized algorithm choice '" << 
+                algorithm << "'" << endl;
             return 1;
         }
         filename = argv[optind];
-        cout << "argument: " << filename << endl;
 
-        cout << "===reading from file" << endl;
         nodefile.open(filename);
         if (nodefile.is_open()) {
             while(getline(nodefile >> ws, line)) {
@@ -115,7 +126,7 @@ int main(int argc, char* argv[]) {
                     iss >> num_attr;
                     iss >> num_bd_m;
                     if (dim != 2) {
-                        cout << "dimension must be 2" << endl;
+                        cerr << "Error: .node dimension must be 2." << endl;
                         return 1;
                     }
                     // TODO more stuff for boundary markers, attributes
@@ -148,21 +159,19 @@ int main(int argc, char* argv[]) {
             exactinit();
             edge_pair le_re;
 
+
+            if (timing) {
+                time_start = clock();
+            }
+
             switch (alg_choice) {
             case 0: // alternating cuts
-                cout << "===triangulating ..." << endl;
+                // alternating cuts starts on vertical cuts
                 le_re = delaunay_dc2(vertices, num_v, true, p);
                 break;
             case 1: // vertical cuts only
-                cout << "===sorting vertices" << endl;
+                // sort vertices first
                 lexico_sort(vertices, num_v, p);
-
-                for (size_t i = 0; i < num_v; ++i) {
-                    cout << vertices[i] << " ";
-                    cout << p.val(vertices[i]) << " ";
-                }
-                cout << endl;
-                cout << "===triangulating ..." << endl;
                 le_re = delaunay_dc(vertices, num_v, p);
                 break;
             default:
@@ -170,16 +179,11 @@ int main(int argc, char* argv[]) {
                     algorithm << endl;
             }
 
-
-            cout << "num_v: " << num_v << endl;
-            cout << "vertices: ";
-            for (size_t i = 0; i < num_v; ++i) {
-                cout << vertices[i] << " ";
+            if (timing) {
+                cout << "Triangulated in: " << 
+                    (float)(clock() - time_start)/CLOCKS_PER_SEC << 
+                    " seconds" << endl;
             }
-            cout << endl;
-            cout << "left edge: (" << le_re[0].org() << "," << le_re[0].dst() << ")" << endl;
-            cout << "right edge: (" << le_re[1].org() << "," << le_re[1].dst() << ")" << endl;
-
 
             string triangles = serialize_triangles(le_re[0]);
             tri_count = 0;
@@ -191,15 +195,21 @@ int main(int argc, char* argv[]) {
                 result += ss.str() + " " + line + "\n";
             }
             stringstream ss;
-            ss << tri_count;
             
-            elefile.open(outfile);
+            if (outfile == NULL) {
+                cout << "Output to: a.ele" << endl;
+                elefile.open("a.ele");
+            } else {
+                cout << "Output to: " << outfile << endl;
+                elefile.open(outfile);
+            }
+            ss << tri_count;
             elefile << ss.str() << " 3 0\n";
             elefile << result;
             elefile.close();
 
         } else {
-            cout << "unable to open input file" << endl;
+            cerr << "Error: unable to open input file." << endl;
             return 1;
         }
 
