@@ -9,14 +9,14 @@ Voronoi Diagrams_, ACM Transactions on Graphics 4(2):74–123, April 1985
 as well as the divide and conquer algorithm for computing Delaunay 
 triangulations (described in the same paper).
 
-building
+build
 --------
-You can compile everything using GNU `make` to create an executable called 
+You can compile everything using `make` to create an executable called 
 `delaunay`.
 
 usage
 -----
-__delaunay__ uses the [.node](http://www.cs.cmu.edu/~quake/triangle.node.html) 
+`delaunay` uses the [.node](http://www.cs.cmu.edu/~quake/triangle.node.html) 
 and [.ele](http://www.cs.cmu.edu/~quake/triangle.ele.html) file formats from 
 Shewchuk's [Triangle](http://www.cs.cmu.edu/~quake/triangle.html).
 
@@ -26,10 +26,10 @@ The actual triangulations (.ele) are viewable using the Show Me visualization
 program included with Triangle.
 
 A common invocation will be:
-> `>> delaunay foo.node`
+> `~ delaunay foo.node`
 
-Please use the help option to see the other possible command line options.
-> `>> delaunay -h`
+Please use the --help option to see the other possible command line options.
+> `~ delaunay -h`
 
 credit
 ------
