@@ -2,10 +2,11 @@ delaunay
 ========
 A Delaunay triangulator.
 
-Uses the quad-edge datastructure for planar subdivisions described in a paper
-by Guibas and Stolfi, 
-_Primitives for the Manipulation of General Subdivisions and the Computation of 
-Voronoi Diagrams_, ACM Transactions on Graphics 4(2):74–123, April 1985
+Currently the quad-edge datastructure for planar subdivisions described in a 
+paper by Guibas and Stolfi, 
+[Primitives for the Manipulation of General Subdivisions and the Computation of 
+Voronoi Diagrams](http://portal.acm.org/citation.cfm?doid=282918.282923), 
+ACM Transactions on Graphics 4(2):74–123, April 1985,
 as well as the divide and conquer algorithm for computing Delaunay 
 triangulations (described in the same paper).
 
