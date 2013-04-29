@@ -38,4 +38,7 @@ Almost all of the test cases are from a
 [project](http://www.cs.berkeley.edu/~jrs/274/proj.html) in Jonathan Shewchuk's 
 [Computational Geometry](http://www.cs.berkeley.edu/~jrs/274/) 
 class at UC Berkeley (CS274).
+The project also uses his robust geometric 
+[predicates](http://www.cs.cmu.edu/~quake/robust.html)
+for floating point inputs (in particular Orient2D and InCircle).
 
