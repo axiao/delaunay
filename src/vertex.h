@@ -7,7 +7,7 @@
  * The GHOST vertex (which helps define the hull of a triangulation) is 0.
  * The HOLE vertex (which helps define holes in a triangulation) is -1.
  *
- * A V_BUFFER maps vertices to planar coordinates.
+ * A vertex_buffer maps vertices to planar coordinates.
  *
  */
 
