@@ -8,9 +8,7 @@
 #include <math.h>
 #include <iostream>
 
-extern "C" {
 #include "predicates.h"
-};
 
 namespace geometric {
 
@@ -125,12 +123,12 @@ inline double incircle(Point2& a, Point2& b,
 
 // is point X left of the directed edge (org, dst)?
 inline bool leftof(Point2& X, Point2& org, Point2& dst) {
-    return orient2d(X, org, dst) > 0;
+    return orient2d(X, org, dst) > 0.0;
 }
 
 // is point X right of the directed edge (org, dst)?
 inline bool rightof(Point2& X, Point2& org, Point2& dst) {
-    return orient2d(X, dst, org) > 0;
+    return orient2d(X, dst, org) > 0.0;
 }
 
 }

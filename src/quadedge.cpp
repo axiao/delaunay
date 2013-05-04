@@ -76,6 +76,7 @@ std::ostream& operator<<(std::ostream& strm, const Edge_Record& a) {
 // Q_Record
 Q_Record::Q_Record() {
     data = NULL;
+    flag = false;
 }
 
 Q_Record Q_Record::next() {
@@ -188,11 +189,12 @@ edge make_edge(vertex org, vertex dst) {
 // <v1> <v2> <v3>
 // oriented counter clockwise, separated by newlines
 std::string serialize_triangles(edge hull_edge) {
-    // mark all hull edges as visited (we don't return the open face)
     edge e, e1, e2;
+
+    // mark all hull edges as visited (we don't return the open face)
     e = hull_edge.sym();
-    while (not (e.get_qr().data)) {
-        e.get_qr().data = (void*) true; // visited
+    while (not e.get_qr().flag) {
+        e.get_qr().flag = true; // visited
         e = e.lnext();
     }
 
@@ -207,7 +209,7 @@ std::string serialize_triangles(edge hull_edge) {
     while (not fringe.empty()) {
         e = fringe.top();
         fringe.pop();
-        if (not (e.get_qr().data)) {
+        if (not e.get_qr().flag) {
             // visit the triangle left of e, mark e and all adjoining edges
             // add the sym() of each visited edge except e
             std::stringstream ss;
@@ -215,12 +217,12 @@ std::string serialize_triangles(edge hull_edge) {
             e2 = e1.lnext();
             // assert e == e2.lnext()
             ss << e.org() << " ";
-            e.get_qr().data = (void*) true;
+            e.get_qr().flag = true;
             ss << e1.org() << " ";
-            e1.get_qr().data = (void*) true;
+            e1.get_qr().flag = true;
             fringe.push(e1.sym());
             ss << e2.org() << "\n";
-            e2.get_qr().data = (void*) true;
+            e2.get_qr().flag = true;
             fringe.push(e2.sym());
 
             std::string triangle = ss.str();
@@ -230,8 +232,8 @@ std::string serialize_triangles(edge hull_edge) {
 
     // unvisit the hull
     e = hull_edge.sym();
-    while (e.get_qr().data) {
-        e.get_qr().data = (void*) false; // unvisit
+    while (e.get_qr().flag) {
+        e.get_qr().flag = false; // unvisit
         e = e.lnext();
     }
 
@@ -244,16 +246,16 @@ std::string serialize_triangles(edge hull_edge) {
     while (not fringe.empty()) {
         e = fringe.top();
         fringe.pop();
-        if ((e.get_qr().data)) {
+        if (e.get_qr().flag) {
             // unvisit the triangle left of e, unmark e and all adjoining edges
             // add the sym() of each unvisited edge except e
             e1 = e.lnext();
             e2 = e1.lnext();
             // assert e == e2.lnext()
-            e.get_qr().data = (void*) false;
-            e1.get_qr().data = (void*) false;
+            e.get_qr().flag = false;
+            e1.get_qr().flag = false;
             fringe.push(e1.sym());
-            e2.get_qr().data = (void*) false;
+            e2.get_qr().flag = false;
             fringe.push(e2.sym());
         }
     }

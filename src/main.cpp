@@ -181,9 +181,9 @@ int main(int argc, char* argv[]) {
             vector<Point2>* vec_p = new vector<Point2>(points, points+num_v+1);
             vertex_buffer p(vec_p);
 
-            exactinit();
             edge_pair le_re;
 
+            exactinit();
 
             if (timing) {
                 time_start = clock();

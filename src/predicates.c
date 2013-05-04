@@ -127,7 +127,8 @@
 /* To try this out, write "#define INEXACT volatile" below.  Normally,       */
 /*   however, INEXACT should be defined to be nothing.  ("#define INEXACT".) */
 
-#define INEXACT                          /* Nothing */
+//#define INEXACT                          /* Nothing */
+#define INEXACT volatile
 /* #define INEXACT volatile */
 
 #define REAL double                      /* float or double */

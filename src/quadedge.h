@@ -55,6 +55,9 @@ struct Q_Record
     vertex v;
     void* data;
 
+    // extra utility bit for doing traversals on the cheap
+    bool flag;
+
 };
 
 class Quadedge 

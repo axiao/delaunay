@@ -15,6 +15,14 @@ build
 You can compile everything using `make` to create an executable called 
 `delaunay`.
 
+Note that the robust geometric predicate library 
+(in the file `src/predicates.c`) 
+may not work perfectly without some fiddling on certain processors. 
+Please refer to the instructions in the library source and on its 
+[web page](http://www.cs.cmu.edu/~quake/robust.pc.html)
+if the output triangulations appear erroneous, disconnected, 
+to have dropped vertices, etc.
+
 usage
 -----
 `delaunay` uses the [.node](http://www.cs.cmu.edu/~quake/triangle.node.html) 
