@@ -185,6 +185,59 @@ edge make_edge(vertex org, vertex dst) {
     return er;
 }
 
+void delete_all_edges(edge hull_edge) {
+    edge e, e1, e2;
+    std::vector<Quadedge*> *to_delete = new std::vector<Quadedge*>;
+
+    // mark all hull edges as visited 
+    e = hull_edge.sym();
+    while (not e.get_qr().flag) {
+        e.get_qr().flag = true; // visited
+        to_delete->push_back(e.q);
+        e = e.lnext();
+    }
+
+    // perform dfs and mark all visited faces
+    std::stack<edge> fringe = std::stack<edge>();
+    fringe.push(hull_edge);
+
+    // invariants:
+    // if e is popped, e's sym() was already visited
+    // if e is not visited, neither have any of the other edges of the face
+    while (not fringe.empty()) {
+        e = fringe.top();
+        fringe.pop();
+        if (not e.get_qr().flag) {
+            // visit the triangle left of e, mark e and all adjoining edges
+            // add the sym() of each visited edge except e
+            e1 = e.lnext();
+            e2 = e1.lnext();
+            // assert e == e2.lnext()
+            e.get_qr().flag = true;
+            if (not e.sym().get_qr().flag) {
+                to_delete->push_back(e.q);
+            }
+            e1.get_qr().flag = true;
+            if (not e1.sym().get_qr().flag) {
+                to_delete->push_back(e1.q);
+                fringe.push(e1.sym());
+            }
+            e2.get_qr().flag = true;
+            if (not e2.sym().get_qr().flag) {
+                to_delete->push_back(e2.q);
+                fringe.push(e2.sym());
+            }
+        }
+    }
+
+    std::vector<Quadedge*>::iterator it;
+    for (it = to_delete->begin(); it != to_delete->end(); ++it) {
+        delete *it;
+    }
+
+    delete to_delete;
+}
+
 // given a counterclockwise convex hull edge, returns a string of triangles
 // <v1> <v2> <v3>
 // oriented counter clockwise, separated by newlines
@@ -262,3 +315,4 @@ std::string serialize_triangles(edge hull_edge) {
 
     return output;
 }
+

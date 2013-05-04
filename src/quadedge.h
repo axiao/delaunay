@@ -82,6 +82,7 @@ edge connect(edge, edge);
 void delete_edge(edge);
 void swap(edge);
 edge make_edge(vertex, vertex);
+void delete_all_edges(edge);
 
 // printing the triangles
 std::string serialize_triangles(edge); //?

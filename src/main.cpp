@@ -63,6 +63,7 @@ int main(int argc, char* argv[]) {
 
     size_t num_v, dim, num_attr, num_bd_m, vn, tri_count;
     double vx, vy;
+    Point2 *points;
     string line;
     ifstream nodefile;
     ofstream elefile;
@@ -159,7 +160,7 @@ int main(int argc, char* argv[]) {
                     
                 }
             }
-            Point2 points[num_v+1];
+            points = new Point2[num_v+1];
             while(getline(nodefile >> ws, line)) {
                 if (line != "" and line[0] != '#') {
                     istringstream iss(line);
@@ -235,6 +236,11 @@ int main(int argc, char* argv[]) {
             elefile << ss.str() << " 3 0\n";
             elefile << result;
             elefile.close();
+
+            // free allocated memory
+            delete_all_edges(le_re[0]);
+            delete [] points;
+            delete vec_p;
 
         } else {
             cerr << "Error: unable to open input file." << endl;
