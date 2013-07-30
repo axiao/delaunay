@@ -35,10 +35,10 @@ The actual triangulations (.ele) are viewable using the Show Me visualization
 program included with Triangle.
 
 A common invocation will be:
-> `~ delaunay foo.node`
+> `$ delaunay foo.node`
 
 Please use the --help option to see the other possible command line options.
-> `~ delaunay -h`
+> `$ delaunay -h`
 
 credit
 ------
